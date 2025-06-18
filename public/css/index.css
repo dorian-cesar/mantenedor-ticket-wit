@@ -1,0 +1,140 @@
+/* Estilo general */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #222;
+  margin: 0;
+  padding: 0;
+  color: #fff;
+}
+
+/* Contenedor principal centrado */
+.contenedor-login {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Caja del login */
+.caja-login {
+  background-color: #333;
+  padding: 30px;
+  border-radius: 8px;
+  width: 300px;
+  text-align: center;
+}
+
+/* Logo centrado */
+.contenedor-logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5em;
+}
+
+.logo {
+  height: 5em;
+  padding: 0;
+  will-change: filter;
+  transition: filter 300ms;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 2em #ffffff);
+}
+
+/* Título */
+h2 {
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+/* Formularios */
+.grupo-formulario {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  color: #ccc;
+}
+
+.control-formulario {
+  width: 100%;
+  padding: 8px;
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+  transition: all 0.3s;
+}
+
+.control-formulario:focus {
+  border-color: #646cff;
+  box-shadow: 0 0 0 0.2rem rgba(100, 108, 255, 0.25);
+  outline: none;
+}
+
+.control-formulario::placeholder {
+  color: #999;
+}
+
+/* Botones */
+.btn-personalizado {
+  background-color: #444;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  width: 100%;
+  border: none;
+  transition: background 0.3s;
+}
+
+.btn-personalizado:hover {
+  background-color: #666;
+  color: white;
+}
+
+.btn-personalizado:disabled {
+  background-color: #888;
+  cursor: not-allowed;
+}
+
+/* Enlace estilo botón */
+.btn-enlace {
+  background: none;
+  border: none;
+  color: #646cff;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 0.9em;
+}
+
+/* Alertas */
+.alerta {
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  font-size: 0.9em;
+}
+
+.alerta-error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.alerta-exito {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+/* Utilidades */
+.texto-centro {
+  text-align: center;
+}
+
+.mt-3 {
+  margin-top: 1rem;
+}

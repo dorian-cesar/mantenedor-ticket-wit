@@ -37,7 +37,6 @@ document.addEventListener("DOMContentLoaded", () => {
       tablaUsuarios.appendChild(fila);
     });
 
-    // Asignar eventos de edición
     document.querySelectorAll(".btn-editar").forEach(btn => {
       btn.addEventListener("click", () => {
         document.getElementById("editarId").value = btn.dataset.id;
@@ -64,8 +63,8 @@ document.addEventListener("DOMContentLoaded", () => {
   searchInput.addEventListener("input", () => {
     const term = searchInput.value.toLowerCase();
     const filtrados = usuarios.filter(u =>
-      u.nombre.toLowerCase().includes(term) ||
-      u.email.toLowerCase().includes(term) ||
+      (u.nombre || "").toLowerCase().includes(term) ||
+      (u.email || "").toLowerCase().includes(term) ||
       (u.rol || "").toLowerCase().includes(term)
     );
     renderUsuarios(filtrados);
@@ -90,12 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const nuevoUsuario = {
-      nombre,
-      email,
-      password,
-      rol
-    };
+    const nuevoUsuario = { nombre, email, password, rol };
 
     try {
       const res = await fetch("https://tickets.dev-wit.com/api/users", {
@@ -108,13 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       if (!res.ok) {
-        let errorData;
-        try {
-            errorData = await res.json();
-        } catch (_) {
-            errorData = { message: "Respuesta inválida del servidor" };
-        }
-        console.error("Detalle error servidor:", errorData);
+        const errorData = await res.json();
         throw new Error(errorData?.message || `Error ${res.status}`);
       }
 
@@ -161,41 +149,36 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       if (!res.ok) {
-        let errorData;
-        try {
-          errorData = await res.json();
-        } catch (_) {
-          errorData = { message: "Error al actualizar usuario." };
-        }
-        console.error("Error backend:", errorData);
+        let errorData = await res.json();
+        document.getElementById("toastEditarError").style.display = 'block';
         throw new Error(errorData?.message || `Error ${res.status}`);
       }
 
       const actualizado = await res.json();
-        usuarios = usuarios.map(u => u.id == id ? actualizado : u);
-        renderUsuarios(usuarios);
-
         // Mostrar toast de éxito
-        const toastEditarExito = document.getElementById("toastEditarExito");
-        toastEditarExito.style.display = 'block';
+        document.getElementById("toastEditarExito").style.display = 'block';
 
-        // Cerrar modal tras 3.5 segundos
-        setTimeout(() => {
+        // Cargar nuevamente todos los usuarios desde la API
+        await cargarUsuariosDesdeAPI();
+
+        // Reaplicar el filtro actual (si existe)
+        searchInput.dispatchEvent(new Event("input"));
+
+
+      // Cerrar modal tras 1.5s
+      setTimeout(() => {
         bootstrap.Modal.getInstance(document.getElementById("modalEditarUsuario")).hide();
-        toastEditarExito.style.display = 'none';
-        }, 3500);
-
+        document.getElementById("toastEditarExito").style.display = 'none';
+      }, 1500);
 
     } catch (error) {
       console.error("Error al actualizar usuario:", error);
-      const toastEditarError = document.getElementById("toastEditarError");
-        toastEditarError.style.display = 'block';    
     }
   });
 
   async function cargarUsuariosDesdeAPI() {
     if (!token) {
-      alert("Debes iniciar sesión.");
+      alert("No hay token. Debes iniciar sesión.");
       window.location.href = "index.html";
       return;
     }
@@ -207,9 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
 
-      if (!res.ok) {
-        throw new Error(`Error ${res.status}`);
-      }
+      if (!res.ok) throw new Error(`Error ${res.status}`);
 
       usuarios = await res.json();
       renderUsuarios(usuarios);

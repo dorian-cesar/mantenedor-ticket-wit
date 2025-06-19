@@ -31,10 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <td>
           <button class="btn btn-sm btn-outline-primary me-1 btn-editar" data-id="${usuario.id}" data-nombre="${usuario.nombre}" data-email="${usuario.email}" data-rol="${usuario.rol}"><i class="bi bi-pencil"></i></button>
           <button class="btn btn-sm btn-outline-warning me-1"><i class="bi bi-arrow-clockwise"></i></button>
-          <button class="btn btn-sm btn-outline-danger btn-eliminar" data-id="${usuario.id}">
-            <i class="bi bi-trash"></i>
-          </button>
-
+          <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
         </td>
       `;
       tablaUsuarios.appendChild(fila);
@@ -48,73 +45,8 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("editarRol").value = btn.dataset.rol;
         new bootstrap.Modal(document.getElementById("modalEditarUsuario")).show();
       });
-    });  
-
-    document.querySelectorAll(".btn-eliminar").forEach(btn => {
-        btn.addEventListener("click", () => {
-            document.getElementById("eliminarId").value = btn.dataset.id;
-            document.getElementById("passwordEliminar").value = "";
-            new bootstrap.Modal(document.getElementById("modalEliminarUsuario")).show();
-        });
-        });
-    }
-
-    document.getElementById("formEliminarUsuario").addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const id = parseInt(document.getElementById("eliminarId").value);
-    const password = document.getElementById("passwordEliminar").value.trim();
-    const currentUser = JSON.parse(localStorage.getItem("usuario"));
-    const email = currentUser?.email;
-
-    if (!password || !email) {
-        document.getElementById("toastEliminarError").style.display = 'block';
-        return;
-    }
-
-    try {
-        // Paso 1: Validar credenciales
-        const loginRes = await fetch("https://tickets.dev-wit.com/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-        });
-
-        if (!loginRes.ok) {
-        document.getElementById("toastEliminarError").style.display = 'block';
-        return;
-        }
-
-        // Paso 2: Proceder con eliminación
-        const res = await fetch(`https://tickets.dev-wit.com/api/users/${id}`, {
-        method: "DELETE",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ password })
-        });
-
-        if (!res.ok) {
-        document.getElementById("toastEliminarError").style.display = 'block';
-        return;
-        }
-
-        document.getElementById("toastEliminarExito").style.display = 'block';
-        await cargarUsuariosDesdeAPI();
-        searchInput.dispatchEvent(new Event("input"));
-
-        setTimeout(() => {
-        bootstrap.Modal.getInstance(document.getElementById("modalEliminarUsuario")).hide();
-        document.getElementById("toastEliminarExito").style.display = 'none';
-        }, 1500);
-
-    } catch (error) {
-        console.error("Error al eliminar usuario:", error);
-        document.getElementById("toastEliminarError").style.display = 'block';
-    }
     });
-
+  }
 
   function getRolColor(rol) {
     if (!rol) return "secondary";

@@ -43,7 +43,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Guardar token y datos del usuario en localStorage
       localStorage.setItem('token', resultado.token);
-      localStorage.setItem('usuario', JSON.stringify(resultado.user));
+      localStorage.setItem('usuario', JSON.stringify({
+        id: resultado.user.id,
+        nombre: resultado.user.nombre,
+        rol: resultado.user.rol,
+        email: datos.email 
+      }));
+
 
       // Redirigir al dashboard
       window.location.href = 'dashboard.html';

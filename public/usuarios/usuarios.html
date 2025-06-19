@@ -180,6 +180,56 @@
         </div>
       </div>
     </div>    
+
+    <!-- Modal para eliminar usuario -->
+    <div class="modal fade" id="modalEliminarUsuario" tabindex="-1" aria-labelledby="modalEliminarUsuarioLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form id="formEliminarUsuario">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalEliminarUsuarioLabel">Eliminar Usuario</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+              <input type="hidden" id="eliminarId">
+              <p>¿Estás seguro de que deseas eliminar este usuario? Esta acción es irreversible.</p>
+              <div class="mb-3">
+                <label for="passwordEliminar" class="form-label">Ingresa tu contraseña para confirmar:</label>
+                <input type="password" class="form-control" id="passwordEliminar" required>
+              </div>
+
+              <!-- Toast de error -->
+              <div class="toast-container toast-center">
+                <div id="toastEliminarError" class="toast align-items-center text-bg-danger border-0 show" role="alert" style="display: none;">
+                  <div class="d-flex">
+                    <div class="toast-body">
+                      No se pudo eliminar el usuario. Verifica tu contraseña.
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="document.getElementById('toastEliminarError').style.display='none'" aria-label="Cerrar"></button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Toast de éxito -->
+              <div class="toast-container toast-center">
+                <div id="toastEliminarExito" class="toast align-items-center text-bg-success border-0 show" role="alert" style="display: none;">
+                  <div class="d-flex">
+                    <div class="toast-body">
+                      Usuario eliminado correctamente.
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="document.getElementById('toastEliminarExito').style.display='none'" aria-label="Cerrar"></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-danger">Eliminar</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
     <script src="usuarios.js" defer></script>
 </body>

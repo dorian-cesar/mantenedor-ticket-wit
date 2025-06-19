@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <td><span class="badge bg-${getRolColor(usuario.rol)}">${usuario.rol || 'Sin rol'}</span></td>
         <td>
           <button class="btn btn-sm btn-outline-primary me-1 btn-editar" data-id="${usuario.id}" data-nombre="${usuario.nombre}" data-email="${usuario.email}" data-rol="${usuario.rol}"><i class="bi bi-pencil"></i></button>
-          <button class="btn btn-sm btn-outline-warning me-1"><i class="bi bi-arrow-clockwise"></i></button>
+          <button class="btn btn-sm btn-outline-warning me-1"><i class="bi bi-arrow-clockwise"></i></button>          
           <button class="btn btn-sm btn-outline-danger btn-eliminar" data-id="${usuario.id}">
             <i class="bi bi-trash"></i>
           </button>
@@ -47,16 +47,25 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("editarEmail").value = btn.dataset.email;
         document.getElementById("editarRol").value = btn.dataset.rol;
         new bootstrap.Modal(document.getElementById("modalEditarUsuario")).show();
-      });
-    });  
+            }); 
+        });  
 
-    document.querySelectorAll(".btn-eliminar").forEach(btn => {
-        btn.addEventListener("click", () => {
-            document.getElementById("eliminarId").value = btn.dataset.id;
-            document.getElementById("passwordEliminar").value = "";
-            new bootstrap.Modal(document.getElementById("modalEliminarUsuario")).show();
+        document.querySelectorAll(".btn-eliminar").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const id = parseInt(btn.dataset.id);
+                const currentUser = JSON.parse(localStorage.getItem("usuario"));
+
+                if (id === currentUser.id) {
+                document.getElementById("toastAutoEliminar").style.display = 'block';
+                return;
+                }
+
+                document.getElementById("eliminarId").value = id;
+                document.getElementById("passwordEliminar").value = "";
+                new bootstrap.Modal(document.getElementById("modalEliminarUsuario")).show();
+            });
         });
-        });
+
     }
 
     document.getElementById("formEliminarUsuario").addEventListener("submit", async (e) => {

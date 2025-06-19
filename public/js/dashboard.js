@@ -1,3 +1,8 @@
+const token = localStorage.getItem("token");
+if (!token) {
+  window.location.href = "./index.html"; // o "../index.html" según estructura
+}
+
 const tickets = [
   {
     id: "TK-001",

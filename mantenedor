@@ -1,0 +1,110 @@
+yo como admin puedo crear usuarios con email y password, puedo reestablecer contraseñas de usuarios, 
+administrar usuarios de la plataforma de ticket, asignar roles a los usuarios, crear y administrar areas de trabajo (departamentos), 
+tambien puedo crear y actualizar estado de los ticket, 
+
+
+Estoy desarrollando el frontend de un sistema de tickets. Actúo como administrador (rol mantenedor) y necesito implementar una interfaz que me permita realizar las siguientes tareas clave, conectándome a un backend ya funcional vía API. Las acciones deben ser intuitivas, con validaciones y retroalimentación clara para el usuario. Aquí está el detalle de cada módulo:
+
+🧑‍💼 Gestión de Usuarios
+
+los roles de usuario son:
+  ejecutor
+  solicitante
+  admin
+
+Objetivo: Crear, listar, editar, eliminar usuarios y asignarles roles.
+
+GET /api/users para listar todos los usuarios.
+
+Campos: id, nombre, email, rol
+
+Formulario de creación:
+
+Campos: nombre, email, contraseña, rol
+
+Validaciones: email único, contraseña mínima segura
+
+Opciones por usuario:
+
+Editar rol
+
+Resetear contraseña
+
+Eliminar usuario
+
+🏢 Gestión de Áreas de Trabajo (Departamentos)
+Objetivo: Administrar las áreas que se asignan a tickets.
+
+GET /api/areas para listar áreas
+
+Funcionalidades:
+
+Crear nueva área (nombre)
+
+Editar nombre del área
+
+Eliminar área (con confirmación de seguridad)
+
+🛠️ Gestión de Tipos de Atención (Servicios)
+Objetivo: Administrar categorías o servicios disponibles al crear un ticket.
+
+Funcionalidades:
+
+Listar tipos de atención
+
+Crear nuevo tipo
+
+Editar o eliminar tipos existentes
+
+🧾 Gestión de Estados de Ticket
+Objetivo: Crear y modificar los estados que un ticket puede tener (Ej: abierto, en proceso, cerrado).
+
+Funcionalidades:
+
+Listar estados
+
+Crear nuevo estado
+
+Editar/eliminar estados
+
+🧩 Consideraciones Generales de UI/UX
+Todos los módulos deben usar diseño moderno (bootstrap + Tailwind).
+
+Tablas responsivas, paginación y buscador en cada módulo.
+
+Formularios con validación en tiempo real.
+
+Feedback visual (modales de confirmación, toasts de éxito/error).
+
+CRUDs basados en los endpoints disponibles.
+
+
+
+
+async function fetchAreas() {
+  try {
+    const token = localStorage.getItem("token")
+    if (!token) {
+      console.error("Token JWT no encontrado en localStorage.")
+      return
+    }
+
+    const response = await fetch("https://tickets.dev-wit.com/api/areas", {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error(`Error ${response.status}: ${response.statusText}`)
+    }
+
+    const areas = await response.json()
+    areasMap = areas.reduce((map, area) => {
+      map[area.id] = area.nombre
+      return map
+    }, {})
+  } catch (error) {
+    console.error("Error al obtener las áreas:", error)
+  }
+}

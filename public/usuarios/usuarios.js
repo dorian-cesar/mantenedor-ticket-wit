@@ -278,4 +278,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   cargarUsuariosDesdeAPI();
+  
+  // Al cargar, verificar si viene el parámetro ?crear=1 para abrir automáticamente el modal
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get("crear") === "1") {
+    const modalCrear = new bootstrap.Modal(document.getElementById("modalUsuario"));
+    modalCrear.show();
+  }
+
 });

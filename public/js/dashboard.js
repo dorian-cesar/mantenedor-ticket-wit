@@ -62,4 +62,31 @@ function actualizarEstadoSistema(texto, estado) {
     actualizarEstadoSistema("API Conectada", "error");
     actualizarEstadoSistema("Base de Datos", "error");
   }  
+
+  // Cargar y mostrar cantidad de áreas
+  try {
+    const resAreas = await fetch("https://tickets.dev-wit.com/api/areas", {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    })
+
+    if (resAreas.ok) {
+      const areas = await resAreas.json()
+      const totalAreas = Array.isArray(areas) ? areas.length : 0
+
+      const estadisticas = document.querySelectorAll(".card .card-body .d-flex.justify-content-between")
+      estadisticas.forEach(item => {
+        const label = item.querySelector("span.text-muted")?.textContent?.trim()
+        const valor = item.querySelector("span.fw-bold")
+
+        if (label === "Áreas Configuradas" && valor) {
+          valor.textContent = totalAreas
+        }
+      })
+    }
+  } catch (err) {
+    console.error("Error al obtener áreas:", err)
+  }
+
 })();

@@ -279,11 +279,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
   cargarUsuariosDesdeAPI();
   
-  // Al cargar, verificar si viene el parámetro ?crear=1 para abrir automáticamente el modal
   const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get("crear") === "1") {
-    const modalCrear = new bootstrap.Modal(document.getElementById("modalUsuario"));
-    modalCrear.show();
+  const crearDesdeDashboard = urlParams.get("crear") === "1";
+
+  // Solo abrir modal si viene el parámetro
+  if (crearDesdeDashboard) {
+    // Solo si NO se ha usado en esta navegación
+    if (!sessionStorage.getItem("modalUsuarioAbierto")) {
+      const modalCrear = new bootstrap.Modal(document.getElementById("modalUsuario"));
+      modalCrear.show();
+
+      // Eliminar el flag apenas se abra el modal
+      sessionStorage.setItem("modalUsuarioAbierto", "true");
+
+      // Limpieza inmediata del parámetro para futuras entradas
+      window.history.replaceState({}, document.title, window.location.pathname);
+      setTimeout(() => {
+        sessionStorage.removeItem("modalUsuarioAbierto");
+      }, 100); // pequeña demora para asegurar apertura
+    }
   }
 
 });

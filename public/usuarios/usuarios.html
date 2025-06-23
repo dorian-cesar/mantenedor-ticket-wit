@@ -10,9 +10,10 @@
   <link rel="stylesheet" href="../css/usuarios.css">
 </head>
 <body class="bg-light">
+  <div id="navbar-container"></div>
   <div class="container py-5">
     <div class="mb-4">
-      <a href="../dashboard.html" class="text-decoration-none text-primary">← Volver al Dashboard</a>
+      <!-- <a href="../dashboard.html" class="text-decoration-none text-primary">← Volver al Dashboard</a> -->
       <h1 class="mt-3 fw-bold">Gestión de Usuarios</h1>
       <p class="text-muted">Administra usuarios, roles y permisos del sistema</p>
     </div>
@@ -230,6 +231,27 @@
         </div>
       </div>
     </div>
+    <script>
+      // Cargar el navbar desde archivo externo
+      fetch("../navbar.html")
+        .then(res => {
+          if (!res.ok) throw new Error("No se pudo cargar el navbar");
+          return res.text();
+        })
+        .then(html => {
+          document.getElementById("navbar-container").innerHTML = html;
+        })
+        .catch(error => {
+          console.error("Error cargando navbar:", error);
+          // Puedes mostrar un navbar básico de respaldo si falla
+          document.getElementById("navbar-container").innerHTML = `
+            <nav class="navbar bg-light">
+              <div class="container">
+                <a class="navbar-brand" href="#">Sistema de Tickets</a>
+              </div>
+            </nav>`;
+        });
+    </script> 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
     <script src="usuarios.js" defer></script>
 </body>

@@ -1,0 +1,89 @@
+<!-- Header de Administración - HTML Bootstrap -->
+<header class="sticky-top bg-white border-bottom shadow-sm z-50">
+  <div class="container py-2 d-flex align-items-center justify-content-between">
+
+    <!-- Logo y título -->
+    <a href="../dashboard.html" class="d-flex align-items-center gap-2 text-decoration-none">
+      <div class="bg-primary rounded d-flex align-items-center justify-content-center" style="width: 32px; height: 32px">
+        <i class="bi bi-house-door text-white"></i>
+      </div>
+      <div class="d-none d-sm-block">
+        <h1 class="h6 mb-0 text-dark">Sistema de Tickets</h1>
+        <small class="text-muted">Panel de Administración</small>
+      </div>
+    </a>
+
+    <!-- Navegación principal -->
+    <nav class="d-none d-md-flex gap-3">
+      <a href="usuarios/usuarios.html" class="text-secondary text-decoration-none">Usuarios</a>
+      <a href="areas/areas.html" class="text-secondary text-decoration-none">Áreas</a>
+      <a href="atencion/atencion.html" class="text-secondary text-decoration-none">Atención</a>
+      <!-- <a href="/statuses" class="text-secondary text-decoration-none">Estados</a> -->
+    </nav>
+
+    <!-- Área usuario -->
+    <div class="d-flex align-items-center gap-3">
+      <!-- Notificación -->
+      <button class="btn btn-light position-relative">
+        <i class="bi bi-bell"></i>
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+          3
+        </span>
+      </button>
+
+      <!-- Info usuario -->
+      <div class="d-none d-sm-flex flex-column text-end">
+        <span class="fw-semibold" id="usuarioNombre">Usuario</span>
+        <span class="badge text-bg-secondary" id="usuarioRol">Rol</span>
+      </div>
+
+      <!-- Dropdown usuario -->
+      <div class="dropdown">
+        <button class="btn btn-light rounded-circle p-0 border-0" type="button" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false" style="width: 40px; height: 40px">
+          <img src="/placeholder.svg" alt="avatar" class="rounded-circle w-100 h-100" id="usuarioAvatar">
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUser">
+          <li class="px-3 py-2">
+            <div class="fw-semibold" id="dropdownUsuarioNombre">Usuario</div>
+            <small class="text-muted" id="dropdownUsuarioEmail">usuario@correo.com</small>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Mi Perfil</a></li>
+          <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Configuración</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><button class="dropdown-item text-danger" id="cerrarSesion"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</button></li>
+        </ul>
+      </div>
+
+      <!-- Menú móvil -->
+      <button class="btn btn-light d-md-none">
+        <i class="bi bi-list"></i>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  // Simulación de datos de usuario desde localStorage
+  document.addEventListener("DOMContentLoaded", () => {
+    const usuario = JSON.parse(localStorage.getItem("usuario")) || {
+      nombre: "Usuario Ejemplo",
+      email: "ejemplo@correo.com",
+      rol: "admin",
+      avatar: null
+    };
+
+    document.getElementById("usuarioNombre").textContent = usuario.nombre;
+    document.getElementById("usuarioRol").textContent = usuario.rol;
+    document.getElementById("dropdownUsuarioNombre").textContent = usuario.nombre;
+    document.getElementById("dropdownUsuarioEmail").textContent = usuario.email;
+    document.getElementById("usuarioAvatar").src = usuario.avatar || "/placeholder.svg";
+
+    document.getElementById("cerrarSesion").addEventListener("click", () => {
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("usuario");
+      alert("Sesión cerrada exitosamente");
+      location.href = "/login";
+    });
+  });
+</script>

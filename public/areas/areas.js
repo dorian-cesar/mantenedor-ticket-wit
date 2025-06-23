@@ -127,28 +127,61 @@ function editarArea(id) {
   modal.show()
 }
 
-async function eliminarArea(id) {
-  if (!confirm("¿Estás seguro de que deseas eliminar esta área?")) return
+function eliminarArea(id) {
+  document.getElementById("eliminarAreaId").value = id;
+  document.getElementById("passwordEliminarArea").value = "";
+  new bootstrap.Modal(document.getElementById("modalEliminarArea")).show();
+}
 
-  const token = localStorage.getItem("token")
+document.getElementById("formEliminarArea").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const id = parseInt(document.getElementById("eliminarAreaId").value);
+  const password = document.getElementById("passwordEliminarArea").value.trim();
+  const currentUser = JSON.parse(localStorage.getItem("usuario"));
+  const email = currentUser?.email;
+  const token = localStorage.getItem("token");
+
+  if (!password || !email) {
+    document.getElementById("toastEliminarAreaError").style.display = 'block';
+    return;
+  }
 
   try {
+    // Validar credenciales
+    const loginRes = await fetch("https://tickets.dev-wit.com/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+
+    if (!loginRes.ok) {
+      document.getElementById("toastEliminarAreaError").style.display = 'block';
+      return;
+    }
+
+    // Eliminar el área
     const res = await fetch(`https://tickets.dev-wit.com/api/areas/${id}`, {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
       },
-    })
+      body: JSON.stringify({ password })
+    });
 
-    if (!res.ok) throw new Error("Error al eliminar el área")
+    if (!res.ok) {
+      document.getElementById("toastEliminarAreaError").style.display = 'block';
+      return;
+    }
 
-    await cargarAreasDesdeAPI()
+    await cargarAreasDesdeAPI();
+    bootstrap.Modal.getInstance(document.getElementById("modalEliminarArea")).hide();
   } catch (error) {
-    console.error(error)
-    alert("No se pudo eliminar el área.")
+    console.error("Error al eliminar área:", error);
+    document.getElementById("toastEliminarAreaError").style.display = 'block';
   }
-}
-
+});
 
 searchInput.addEventListener("input", filtrar)
 

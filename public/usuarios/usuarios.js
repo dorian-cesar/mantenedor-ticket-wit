@@ -29,12 +29,10 @@ document.addEventListener("DOMContentLoaded", () => {
         <td>${usuario.email}</td>
         <td><span class="badge bg-${getRolColor(usuario.rol)}">${usuario.rol || 'Sin rol'}</span></td>
         <td>
-          <button class="btn btn-sm btn-outline-primary me-1 btn-editar" data-id="${usuario.id}" data-nombre="${usuario.nombre}" data-email="${usuario.email}" data-rol="${usuario.rol}"><i class="bi bi-pencil"></i></button>
-          <button class="btn btn-sm btn-outline-warning me-1"><i class="bi bi-arrow-clockwise"></i></button>          
+          <button class="btn btn-sm btn-outline-primary me-1 btn-editar" data-id="${usuario.id}" data-nombre="${usuario.nombre}" data-email="${usuario.email}" data-rol="${usuario.rol}"><i class="bi bi-pencil"></i></button>                 
           <button class="btn btn-sm btn-outline-danger btn-eliminar" data-id="${usuario.id}">
             <i class="bi bi-trash"></i>
           </button>
-
         </td>
       `;
       tablaUsuarios.appendChild(fila);

@@ -39,7 +39,22 @@ function actualizarEstadoSistema(texto, estado) {
     if (res.ok) {
       actualizarEstadoSistema("API Conectada", "ok");
       actualizarEstadoSistema("Base de Datos", "ok");
-    } else {
+
+      // Mostrar cantidad de usuarios en bloque de estadísticas
+      const data = await res.json();
+      const totalUsuarios = Array.isArray(data) ? data.length : 0;
+
+      const estadisticas = document.querySelectorAll(".card .card-body .d-flex.justify-content-between");
+      estadisticas.forEach(item => {
+        const label = item.querySelector("span.text-muted")?.textContent?.trim();
+        const valor = item.querySelector("span.fw-bold");
+
+        if (label === "Usuarios Registrados" && valor) {
+          valor.textContent = totalUsuarios;
+        }
+      });
+    } 
+    else {
       actualizarEstadoSistema("API Conectada", "error");
       actualizarEstadoSistema("Base de Datos", "error");
     }

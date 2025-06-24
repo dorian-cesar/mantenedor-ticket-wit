@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Perfil</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="perfil.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container mx-auto px-4 py-8">
+    <div class="mb-6">
+      <h1 class="text-3xl fw-bold text-gray-900 mb-2">Mi Perfil</h1>
+      <p class="text-gray-600">Administra tu información personal y configuración de cuenta</p>
+    </div>
+
+    <div id="changes-alert" class="mb-6 card border-orange-200 bg-orange-50 d-none">
+      <div class="card-body pt-3">
+        <div class="d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-gear-fill text-orange-600"></i>
+            <span class="text-orange-800 fw-medium">Tienes cambios sin guardar</span>
+          </div>
+          <div class="d-flex gap-2">
+            <button id="reset-btn" class="btn btn-outline-secondary btn-sm">
+              <i class="bi bi-arrow-counterclockwise me-2"></i>
+              Descartar
+            </button>
+            <button id="save-btn" class="btn btn-primary btn-sm">
+              <i class="bi bi-save me-2"></i>
+              <span id="save-text">Guardar Cambios</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Header del perfil -->
+    <div class="card mb-6">
+      <div class="card-body pt-3">
+        <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center gap-4">
+          <div class="position-relative">
+            <div class="avatar-container">
+              <img id="avatar-img" src="/placeholder.svg" alt="Avatar" class="rounded-circle" width="96" height="96">
+              <span id="avatar-fallback" class="avatar-fallback text-uppercase fs-5 bg-blue-100 text-blue-600 d-flex align-items-center justify-content-center"></span>
+            </div>
+            <label for="avatar-upload" class="position-absolute bottom-0 end-0 bg-blue-600 text-white rounded-circle p-2 cursor-pointer hover-bg-blue-700">
+              <i class="bi bi-camera"></i>
+              <input id="avatar-upload" type="file" accept="image/*" class="d-none">
+            </label>
+          </div>
+
+          <div class="flex-grow-1">
+            <h2 id="profile-name" class="text-2xl fw-bold text-gray-900">Juan Pérez</h2>
+            <p id="profile-position" class="text-gray-600 mb-2">Administrador de Sistema</p>
+            <div class="d-flex flex-wrap gap-4 text-sm text-gray-500">
+              <div class="d-flex align-items-center gap-1">
+                <i class="bi bi-envelope"></i>
+                <span id="profile-email">juan@empresa.com</span>
+              </div>
+              <div class="d-flex align-items-center gap-1">
+                <i class="bi bi-building"></i>
+                <span id="profile-department">Tecnología</span>
+              </div>
+              <div class="d-flex align-items-center gap-1">
+                <i class="bi bi-geo-alt"></i>
+                <span id="profile-location">Santiago, Chile</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex flex-column flex-sm-row gap-4">
+            <div class="text-center">
+              <div id="tickets-resolved" class="text-2xl fw-bold text-blue-600">42</div>
+              <div class="text-sm text-gray-500">Tickets Resueltos</div>
+            </div>
+            <div class="text-center">
+              <div id="satisfaction-score" class="text-2xl fw-bold text-green-600">4.8</div>
+              <div class="text-sm text-gray-500">Puntuación</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ul class="nav nav-tabs mb-4" id="profileTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active d-flex align-items-center gap-2" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal" type="button" role="tab">
+          <i class="bi bi-person"></i>
+          <span class="d-none d-sm-inline">Personal</span>
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link d-flex align-items-center gap-2" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button" role="tab">
+          <i class="bi bi-shield"></i>
+          <span class="d-none d-sm-inline">Seguridad</span>
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link d-flex align-items-center gap-2" id="preferences-tab" data-bs-toggle="tab" data-bs-target="#preferences" type="button" role="tab">
+          <i class="bi bi-gear"></i>
+          <span class="d-none d-sm-inline">Preferencias</span>
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link d-flex align-items-center gap-2" id="notifications-tab" data-bs-toggle="tab" data-bs-target="#notifications" type="button" role="tab">
+          <i class="bi bi-bell"></i>
+          <span class="d-none d-sm-inline">Notificaciones</span>
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link d-flex align-items-center gap-2" id="activity-tab" data-bs-toggle="tab" data-bs-target="#activity" type="button" role="tab">
+          <i class="bi bi-activity"></i>
+          <span class="d-none d-sm-inline">Actividad</span>
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="profileTabsContent">
+      <!-- Información Personal -->
+      <div class="tab-pane fade show active" id="personal" role="tabpanel" aria-labelledby="personal-tab">
+        <div class="grid gap-6">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title d-flex align-items-center gap-2">
+                <i class="bi bi-person"></i>
+                Información Personal
+              </h5>
+              <p class="card-text text-muted">Actualiza tu información personal y de contacto</p>
+            </div>
+            <div class="card-body">
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre Completo</label>
+                    <input type="text" class="form-control" id="nombre" value="Juan Pérez" placeholder="Tu nombre completo">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" value="juan@empresa.com" placeholder="tu@email.com">
+                  </div>
+                </div>
+              </div>
+
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label for="telefono" class="form-label">Teléfono</label>
+                    <input type="text" class="form-control" id="telefono" value="+56 9 1234 5678" placeholder="+56 9 1234 5678">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label for="cargo" class="form-label">Cargo</label>
+                    <input type="text" class="form-control" id="cargo" value="Administrador de Sistema" placeholder="Tu cargo o posición">
+                  </div>
+                </div>
+              </div>
+
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label for="departamento" class="form-label">Departamento</label>
+                    <input type="text" class="form-control" id="departamento" value="Tecnología" placeholder="Tu departamento">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label for="ubicacion" class="form-label">Ubicación</label>
+                    <input type="text" class="form-control" id="ubicacion" value="Santiago, Chile" placeholder="Ciudad, País">
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="biografia" class="form-label">Biografía</label>
+                <textarea class="form-control" id="biografia" rows="4" placeholder="Cuéntanos un poco sobre ti...">Administrador de sistemas con 5 años de experiencia en gestión de tickets y soporte técnico.</textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title">Información de Cuenta</h5>
+            </div>
+            <div class="card-body">
+              <div class="row g-4 text-sm">
+                <div class="col-md-6">
+                  <label class="text-muted">Fecha de Registro</label>
+                  <p class="fw-medium">15 de enero de 2023</p>
+                </div>
+                <div class="col-md-6">
+                  <label class="text-muted">Último Acceso</label>
+                  <p class="fw-medium">24 de junio de 2025</p>
+                </div>
+                <div class="col-md-6">
+                  <label class="text-muted">ID de Usuario</label>
+                  <p class="fw-medium">#1</p>
+                </div>
+                <div class="col-md-6">
+                  <label class="text-muted">Sesiones Activas</label>
+                  <p class="fw-medium">3 dispositivos</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seguridad -->
+      <div class="tab-pane fade" id="security" role="tabpanel" aria-labelledby="security-tab">
+        <div class="grid gap-6">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title">Cambiar Contraseña</h5>
+            </div>
+            <div class="card-body">
+              <form id="password-change-form">
+                <div class="mb-3">
+                  <label for="current-password" class="form-label">Contraseña Actual</label>
+                  <input type="password" class="form-control" id="current-password" required>
+                </div>
+                <div class="mb-3">
+                  <label for="new-password" class="form-label">Nueva Contraseña</label>
+                  <input type="password" class="form-control" id="new-password" required>
+                </div>
+                <div class="mb-3">
+                  <label for="confirm-password" class="form-label">Confirmar Nueva Contraseña</label>
+                  <input type="password" class="form-control" id="confirm-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Cambiar Contraseña</button>
+              </form>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title">Autenticación de Dos Factores</h5>
+            </div>
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-1">Autenticación de Dos Factores</h6>
+                  <p class="text-muted mb-0">Añade una capa adicional de seguridad a tu cuenta</p>
+                </div>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="two-factor-toggle">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title">Sesiones Activas</h5>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Dispositivo</th>
+                      <th>Ubicación</th>
+                      <th>Última Actividad</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Windows 10, Chrome</td>
+                      <td>Santiago, Chile</td>
+                      <td>Hace 2 horas</td>
+                      <td><button class="btn btn-sm btn-outline-danger">Cerrar sesión</button></td>
+                    </tr>
+                    <tr>
+                      <td>MacOS, Safari</td>
+                      <td>Santiago, Chile</td>
+                      <td>Hace 1 día</td>
+                      <td><button class="btn btn-sm btn-outline-danger">Cerrar sesión</button></td>
+                    </tr>
+                    <tr>
+                      <td>Android, Chrome</td>
+                      <td>Santiago, Chile</td>
+                      <td>Hace 3 días</td>
+                      <td><button class="btn btn-sm btn-outline-danger">Cerrar sesión</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preferencias -->
+      <div class="tab-pane fade" id="preferences" role="tabpanel" aria-labelledby="preferences-tab">
+        <div class="grid gap-6">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title d-flex align-items-center gap-2">
+                <i class="bi bi-globe"></i>
+                Configuración Regional
+              </h5>
+              <p class="card-text text-muted">Personaliza tu experiencia según tu ubicación y preferencias</p>
+            </div>
+            <div class="card-body">
+              <div class="row g-4">
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label for="timezone" class="form-label">Zona Horaria</label>
+                    <select class="form-select" id="timezone">
+                      <option value="America/Santiago" selected>Santiago (GMT-3)</option>
+                      <option value="America/Buenos_Aires">Buenos Aires (GMT-3)</option>
+                      <option value="America/Sao_Paulo">São Paulo (GMT-3)</option>
+                      <option value="America/Mexico_City">Ciudad de México (GMT-6)</option>
+                      <option value="America/New_York">Nueva York (GMT-5)</option>
+                      <option value="Europe/Madrid">Madrid (GMT+1)</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label for="idioma" class="form-label">Idioma</label>
+                    <select class="form-select" id="idioma">
+                      <option value="es" selected>Español</option>
+                      <option value="en">English</option>
+                      <option value="pt">Português</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label for="formatoFecha" class="form-label">Formato de Fecha</label>
+                    <select class="form-select" id="formatoFecha">
+                      <option value="DD/MM/YYYY" selected>DD/MM/YYYY</option>
+                      <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                      <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title d-flex align-items-center gap-2">
+                <i class="bi bi-palette"></i>
+                Apariencia
+              </h5>
+              <p class="card-text text-muted">Personaliza la apariencia de la interfaz</p>
+            </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <label for="tema" class="form-label">Tema</label>
+                <select class="form-select w-100 w-md-50" id="tema">
+                  <option value="light" selected>Claro</option>
+                  <option value="dark">Oscuro</option>
+                  <option value="auto">Automático</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notificaciones -->
+      <div class="tab-pane fade" id="notifications" role="tabpanel" aria-labelledby="notifications-tab">
+        <div class="grid gap-6">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title d-flex align-items-center gap-2">
+                <i class="bi bi-bell"></i>
+                Configuración de Notificaciones
+              </h5>
+              <p class="card-text text-muted">Controla cómo y cuándo recibes notificaciones</p>
+            </div>
+            <div class="card-body">
+              <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div>
+                    <label class="form-label">Notificaciones por Email</label>
+                    <p class="text-muted small">Recibir notificaciones en tu correo electrónico</p>
+                  </div>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="notificacionesEmail" checked>
+                  </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div>
+                    <label class="form-label">Notificaciones Push</label>
+                    <p class="text-muted small">Mostrar notificaciones en el navegador</p>
+                  </div>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="notificacionesPush" checked>
+                  </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div>
+                    <label class="form-label">Notificaciones SMS</label>
+                    <p class="text-muted small">Recibir notificaciones por mensaje de texto</p>
+                  </div>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="notificacionesSMS">
+                  </div>
+                </div>
+              </div>
+
+              <hr>
+
+              <div class="mb-4">
+                <div class="mb-3">
+                  <label for="frecuenciaNotificaciones" class="form-label">Frecuencia de Notificaciones</label>
+                  <select class="form-select w-100 w-md-50" id="frecuenciaNotificaciones">
+                    <option value="immediate" selected>Inmediata</option>
+                    <option value="hourly">Cada hora</option>
+                    <option value="daily">Diaria</option>
+                    <option value="weekly">Semanal</option>
+                  </select>
+                </div>
+              </div>
+
+              <hr>
+
+              <div class="mb-4">
+                <label class="form-label">Tipos de Notificaciones</label>
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                      <label class="form-label">Tickets Asignados</label>
+                      <p class="text-muted small">Cuando se te asigna un nuevo ticket</p>
+                    </div>
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="notificarTicketsAsignados" checked>
+                    </div>
+                  </div>
+
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                      <label class="form-label">Tickets Vencidos</label>
+                      <p class="text-muted small">Cuando un ticket supera el tiempo límite</p>
+                    </div>
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="notificarTicketsVencidos" checked>
+                    </div>
+                  </div>
+
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                      <label class="form-label">Menciones</label>
+                      <p class="text-muted small">Cuando alguien te menciona en un comentario</p>
+                    </div>
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="notificarMenciones" checked>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actividad -->
+      <div class="tab-pane fade" id="activity" role="tabpanel" aria-labelledby="activity-tab">
+        <div class="grid gap-6">
+          <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+              <div class="card">
+                <div class="card-body pt-3">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                      <p class="text-2xl fw-bold text-blue-600">45</p>
+                      <p class="text-sm text-muted">Tickets Creados</p>
+                    </div>
+                    <i class="bi bi-activity fs-3 text-blue-600"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+              <div class="card">
+                <div class="card-body pt-3">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                      <p class="text-2xl fw-bold text-green-600">42</p>
+                      <p class="text-sm text-muted">Tickets Resueltos</p>
+                    </div>
+                    <i class="bi bi-activity fs-3 text-green-600"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+              <div class="card">
+                <div class="card-body pt-3">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                      <p class="text-2xl fw-bold text-orange-600">2.5h</p>
+                      <p class="text-sm text-muted">Tiempo Promedio</p>
+                    </div>
+                    <i class="bi bi-clock fs-3 text-orange-600"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+              <div class="card">
+                <div class="card-body pt-3">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                      <p class="text-2xl fw-bold text-purple-600">4.8</p>
+                      <p class="text-sm text-muted">Puntuación</p>
+                    </div>
+                    <i class="bi bi-activity fs-3 text-purple-600"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title d-flex align-items-center gap-2">
+                <i class="bi bi-activity"></i>
+                Actividad Reciente
+              </h5>
+            </div>
+            <div class="card-body">
+              <div class="mb-4">
+                <div class="d-flex align-items-center gap-3 p-3 bg-light rounded">
+                  <div class="bg-success rounded-circle" style="width: 8px; height: 8px;"></div>
+                  <div class="flex-grow-1">
+                    <p class="small fw-medium">Resolvió ticket #92</p>
+                    <p class="small text-muted">Hace 2 horas</p>
+                  </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-3 p-3 bg-light rounded">
+                  <div class="bg-primary rounded-circle" style="width: 8px; height: 8px;"></div>
+                  <div class="flex-grow-1">
+                    <p class="small fw-medium">Comentó en ticket #91</p>
+                    <p class="small text-muted">Hace 4 horas</p>
+                  </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-3 p-3 bg-light rounded">
+                  <div class="bg-warning rounded-circle" style="width: 8px; height: 8px;"></div>
+                  <div class="flex-grow-1">
+                    <p class="small fw-medium">Cambió estado de ticket #90</p>
+                    <p class="small text-muted">Hace 1 día</p>
+                  </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-3 p-3 bg-light rounded">
+                  <div class="bg-primary rounded-circle" style="width: 8px; height: 8px;"></div>
+                  <div class="flex-grow-1">
+                    <p class="small fw-medium">Creó ticket #89</p>
+                    <p class="small text-muted">Hace 2 días</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botones de acción fijos -->
+    <div class="sticky-bottom bg-white border-top p-4 mt-4">
+      <div class="d-flex justify-content-end gap-2">
+        <button id="reset-bottom-btn" class="btn btn-outline-secondary" disabled>
+          <i class="bi bi-arrow-counterclockwise me-2"></i>
+          Restablecer
+        </button>
+        <button id="save-bottom-btn" class="btn btn-primary" disabled>
+          <i class="bi bi-save me-2"></i>
+          <span id="save-bottom-text">Guardar Cambios</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong id="toast-title" class="me-auto">Notificación</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div id="toast-body" class="toast-body"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="perfil.js"></script>
+</body>
+</html>

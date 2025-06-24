@@ -1,0 +1,119 @@
+/* Custom styles */
+:root {
+  --orange-200: #fed7aa;
+  --orange-600: #ea580c;
+  --orange-800: #9a3412;
+  --orange-50: #fff7ed;
+  --blue-100: #dbeafe;
+  --blue-600: #2563eb;
+  --blue-700: #1d4ed8;
+  --green-600: #16a34a;
+  --purple-600: #9333ea;
+}
+
+body {
+  background-color: #f8f9fa;
+}
+
+.container {
+  max-width: 1200px;
+}
+
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+
+.grid {
+  display: grid;
+}
+
+.gap-6 {
+  gap: 1.5rem;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+.text-3xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+
+.bg-orange-50 {
+  background-color: var(--orange-50);
+}
+
+.border-orange-200 {
+  border-color: var(--orange-200);
+}
+
+.text-orange-600 {
+  color: var(--orange-600);
+}
+
+.text-orange-800 {
+  color: var(--orange-800);
+}
+
+.bg-blue-100 {
+  background-color: var(--blue-100);
+}
+
+.text-blue-600 {
+  color: var(--blue-600);
+}
+
+.hover-bg-blue-700:hover {
+  background-color: var(--blue-700);
+}
+
+.text-green-600 {
+  color: var(--green-600);
+}
+
+.text-purple-600 {
+  color: var(--purple-600);
+}
+
+.avatar-container {
+  position: relative;
+  width: 96px;
+  height: 96px;
+}
+
+.avatar-fallback {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.sticky-bottom {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Custom classes for Bootstrap compatibility */
+.flex-grow-1 {
+  flex-grow: 1;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sticky-bottom {
+    position: static;
+  }
+}

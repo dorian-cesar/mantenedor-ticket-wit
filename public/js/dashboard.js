@@ -88,5 +88,31 @@ function actualizarEstadoSistema(texto, estado) {
   } catch (err) {
     console.error("Error al obtener áreas:", err)
   }
+  // Cargar y mostrar cantidad de tipos de atención
+  try {
+    const resTipos = await fetch("https://tickets.dev-wit.com/api/tipos", {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    if (resTipos.ok) {
+      const tipos = await resTipos.json();
+      const totalTipos = Array.isArray(tipos) ? tipos.length : 0;
+
+      const estadisticas = document.querySelectorAll(".card .card-body .d-flex.justify-content-between");
+      estadisticas.forEach(item => {
+        const label = item.querySelector("span.text-muted")?.textContent?.trim();
+        const valor = item.querySelector("span.fw-bold");
+
+        if (label === "Tipos de Atención" && valor) {
+          valor.textContent = totalTipos;
+        }
+      });
+    }
+  } catch (err) {
+    console.error("Error al obtener tipos de atención:", err);
+  }
+
 
 })();

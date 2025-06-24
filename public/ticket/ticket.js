@@ -63,12 +63,7 @@ function filtrarTickets() {
 
 // Función para renderizar tickets
 function renderizarTickets(ticketsARenderizar) {
-  tabla.innerHTML = "";
-
-  if (!ticketsARenderizar || ticketsARenderizar.length === 0) {
-    mostrarMensajeVacio("No hay tickets registrados.");
-    return;
-  }
+  tabla.innerHTML = ""; 
 
   ticketsARenderizar.forEach(ticket => {
     const row = document.createElement('tr');
@@ -77,7 +72,7 @@ function renderizarTickets(ticketsARenderizar) {
       <td>${ticket.observaciones || '-'}</td>
       <td>
         <div class="d-flex justify-content-between align-items-center">
-          <span class="badge bg-primary">${ticket.estado || '-'}</span>
+          <span class="badge ${getBadgeClass(ticket.estado)}">${ticket.estado || '-'}</span>
           <img src="/img/ojo.png" alt="Ver observación" style="width: 20px; cursor: pointer;" class="ms-2 view-details">
         </div>
       </td>
@@ -127,4 +122,18 @@ function mostrarMensajeVacio(mensaje) {
 // Event listener para el input de búsqueda
 if (searchInput) {
   searchInput.addEventListener('input', filtrarTickets);
+}
+
+function getBadgeClass(estado) {
+  if (!estado) return "bg-secondary";
+
+  const normalized = estado.trim().toLowerCase();
+
+  if (normalized === "en ejecución") return "badge-estado-ejecucion";
+  if (normalized === "creado") return "badge-estado-creado";
+  if (normalized === "pendiente por presupuesto") return "badge-estado-pendiente";
+  if (normalized === "cancelado") return "badge-estado-cancelado";
+  if (normalized === "listo") return "badge-estado-listo";
+
+  return "bg-secondary"; // default
 }

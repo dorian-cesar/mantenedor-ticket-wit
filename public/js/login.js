@@ -78,3 +78,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
+document.getElementById("togglePassword").addEventListener("click", () => {
+  const passwordField = document.getElementById("password");
+  const icon = document.getElementById("iconoPassword");
+
+  const esVisible = passwordField.type === "text";
+  passwordField.type = esVisible ? "password" : "text";
+  icon.className = esVisible ? "bi bi-eye" : "bi bi-eye-slash";
+});
+

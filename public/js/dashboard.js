@@ -27,6 +27,34 @@ function actualizarEstadoSistema(texto, estado) {
   });
 }
 
+// Función para obtener y contar tickets por estado
+async function obtenerEstadisticasTickets() {
+  try {
+    const res = await fetch("https://tickets.dev-wit.com/api/tickets", {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    if (!res.ok) throw new Error("Error al obtener tickets");
+
+    const tickets = await res.json();
+    if (!Array.isArray(tickets)) return {};
+
+    // Normalizar estados a minúsculas para comparación
+    return {
+      creados: tickets.filter(t => t.estado && t.estado.toLowerCase() === "creado").length,
+      enEjecucion: tickets.filter(t => t.estado && t.estado.toLowerCase() === "en ejecución").length,
+      pendientes: tickets.filter(t => t.estado && t.estado.toLowerCase() === "pendiente por presupuesto").length,
+      cancelados: tickets.filter(t => t.estado && t.estado.toLowerCase() === "cancelado").length,
+      listos: tickets.filter(t => t.estado && t.estado.toLowerCase() === "listo").length
+    };
+  } catch (err) {
+    console.error("Error al obtener estadísticas de tickets:", err);
+    return {};
+  }
+}
+
 // Verificar conectividad API/DB
 (async () => {
   try {
@@ -69,25 +97,26 @@ function actualizarEstadoSistema(texto, estado) {
       headers: {
         "Authorization": `Bearer ${token}`
       }
-    })
+    });
 
     if (resAreas.ok) {
-      const areas = await resAreas.json()
-      const totalAreas = Array.isArray(areas) ? areas.length : 0
+      const areas = await resAreas.json();
+      const totalAreas = Array.isArray(areas) ? areas.length : 0;
 
-      const estadisticas = document.querySelectorAll(".card .card-body .d-flex.justify-content-between")
+      const estadisticas = document.querySelectorAll(".card .card-body .d-flex.justify-content-between");
       estadisticas.forEach(item => {
-        const label = item.querySelector("span.text-muted")?.textContent?.trim()
-        const valor = item.querySelector("span.fw-bold")
+        const label = item.querySelector("span.text-muted")?.textContent?.trim();
+        const valor = item.querySelector("span.fw-bold");
 
         if (label === "Áreas Configuradas" && valor) {
-          valor.textContent = totalAreas
+          valor.textContent = totalAreas;
         }
-      })
+      });
     }
   } catch (err) {
-    console.error("Error al obtener áreas:", err)
+    console.error("Error al obtener áreas:", err);
   }
+
   // Cargar y mostrar cantidad de tipos de atención
   try {
     const resTipos = await fetch("https://tickets.dev-wit.com/api/tipos", {
@@ -114,5 +143,37 @@ function actualizarEstadoSistema(texto, estado) {
     console.error("Error al obtener tipos de atención:", err);
   }
 
+  // Cargar y mostrar estadísticas de tickets
+  try {
+    const stats = await obtenerEstadisticasTickets();
+
+    const estadisticas = document.querySelectorAll(".card .card-body .d-flex.justify-content-between");
+    estadisticas.forEach(item => {
+      const label = item.querySelector("span.text-muted")?.textContent?.trim();
+      const valor = item.querySelector("span.fw-bold");
+
+      if (!label || !valor) return;
+
+      switch(label) {
+        case "Tickets creados":
+          valor.textContent = stats.creados ?? "--";
+          break;
+        case "Tickets en ejecución":
+          valor.textContent = stats.enEjecucion ?? "--";
+          break;
+        case "Tickets pendientes":
+          valor.textContent = stats.pendientes ?? "--";
+          break;
+        case "Tickets cancelados":
+          valor.textContent = stats.cancelados ?? "--";
+          break;
+        case "Tickets listos":
+          valor.textContent = stats.listos ?? "--";
+          break;
+      }
+    });
+  } catch (err) {
+    console.error("Error al mostrar estadísticas de tickets:", err);
+  }
 
 })();

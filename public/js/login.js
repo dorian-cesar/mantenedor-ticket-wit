@@ -26,19 +26,30 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       if (!respuesta.ok) {
+        const errorData = await respuesta.json().catch(() => ({}));
+        const mensaje = (errorData?.message || "").toLowerCase();
+
         if (respuesta.status === 401) {
-          throw new Error('Contraseña incorrecta o usuario no autorizado.');
-        } else if (respuesta.status === 404) {
-          throw new Error('Correo no registrado.');
-        } else {
-          throw new Error('Error de servidor. Intenta nuevamente.');
+          if (mensaje.includes("user no encontrado")) {
+            throw new Error("El correo ingresado no está registrado.");
+          }
+          if (mensaje.includes("credenciales inválidas")) {
+            throw new Error("La contraseña ingresada es incorrecta.");
+          }
+          throw new Error("No autorizado. Verifica tus datos.");
         }
+
+        throw new Error("Error inesperado del servidor. Intenta nuevamente más tarde.");
       }
 
       const resultado = await respuesta.json();
 
       if (!resultado.token || !resultado.user) {
         throw new Error('Respuesta inválida del servidor.');
+      }
+
+      if (resultado.user?.rol?.toLowerCase() !== "admin") {
+        throw new Error("No tienes permitido acceder.");
       }
 
       // Guardar token y datos del usuario en localStorage

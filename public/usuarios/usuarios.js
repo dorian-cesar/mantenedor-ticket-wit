@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
       fila.innerHTML = `
         <td>${usuario.nombre}</td>
         <td>${usuario.email}</td>
-        <td><span class="badge bg-${getRolColor(usuario.rol)}">${usuario.rol || 'Sin rol'}</span></td>
+        <td><span class="badge ${getRolBadgeClass(usuario.rol)}">${usuario.rol || 'Sin rol'}</span></td>
         <td>
           <button class="btn btn-sm btn-outline-primary me-1 btn-editar" data-id="${usuario.id}" data-nombre="${usuario.nombre}" data-email="${usuario.email}" data-rol="${usuario.rol}">
             <i class="bi bi-pencil"></i>
@@ -122,30 +122,17 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("Error al eliminar usuario:", error);
         document.getElementById("toastEliminarError").style.display = 'block';
     }
+    });  
+
+    searchInput.addEventListener("input", () => {
+      const term = searchInput.value.toLowerCase();
+      const filtrados = usuarios.filter(u =>
+        (u.nombre || "").toLowerCase().includes(term) ||
+        (u.email || "").toLowerCase().includes(term) ||
+        (u.rol || "").toLowerCase().includes(term)
+      );
+      renderUsuarios(filtrados);
     });
-
-
-  function getRolColor(rol) {
-    if (!rol) return "secondary";
-    switch (rol.toLowerCase()) {
-      case "admin": return "danger";
-      case "soporte": return "primary";
-      case "usuario": return "success";
-      case "ejecutor": return "info";
-      case "solicitante": return "warning";
-      default: return "secondary";
-    }
-  }
-
-  searchInput.addEventListener("input", () => {
-    const term = searchInput.value.toLowerCase();
-    const filtrados = usuarios.filter(u =>
-      (u.nombre || "").toLowerCase().includes(term) ||
-      (u.email || "").toLowerCase().includes(term) ||
-      (u.rol || "").toLowerCase().includes(term)
-    );
-    renderUsuarios(filtrados);
-  });
 
   document.getElementById("formUsuario").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -303,6 +290,18 @@ document.addEventListener("DOMContentLoaded", () => {
         sessionStorage.removeItem("modalUsuarioAbierto");
       }, 100); // pequeña demora para asegurar apertura
     }
+  }
+
+  function getRolBadgeClass(rol) {
+    if (!rol) return "bg-secondary";
+
+    const normalized = rol.trim().toLowerCase();
+
+    if (normalized === "ejecutor") return "badge-usuario-ejecutor";
+    if (normalized === "solicitante") return "badge-usuario-solicitante";
+    if (normalized === "admin") return "badge-usuario-admin";
+
+    return "bg-secondary"; // fallback
   }
 
 });

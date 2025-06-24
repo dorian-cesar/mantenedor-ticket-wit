@@ -102,6 +102,33 @@ label {
   cursor: not-allowed;
 }
 
+.btn-cargando {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+}
+
+.btn-cargando::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1.2em;
+  height: 1.2em;
+  margin-top: -0.6em;
+  margin-left: -0.6em;
+  border: 2px solid transparent;
+  border-top: 2px solid #fff;
+  border-radius: 50%;
+  animation: girar 0.8s linear infinite;
+}
+
+@keyframes girar {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
 /* Enlace estilo botón */
 .btn-enlace {
   background: none;

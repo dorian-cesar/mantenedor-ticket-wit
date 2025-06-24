@@ -16,6 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
       password: campoPassword.value.trim()
     };
 
+    const btn = document.getElementById("btn-ingresar");
+    btn.disabled = true;
+    btn.classList.add("btn-cargando");
+
     try {
       const respuesta = await fetch('https://tickets.dev-wit.com/api/auth/login', {
         method: 'POST',
@@ -68,6 +72,9 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (error) {
       errorLogin.textContent = error.message;
       errorLogin.style.display = 'block';
+      btn.disabled = false;
+      btn.classList.remove("btn-cargando");
+
     }
   });
 });

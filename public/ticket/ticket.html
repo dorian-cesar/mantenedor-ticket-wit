@@ -18,9 +18,10 @@
 </head>
 <body class="bg-light">
     <div id="navbar-container"></div>
-  <div class="container py-4">
+  <div class="container py-5">
     <div class="mb-4">
-      <h1 class="h3">Configuración de Estados</h1>
+      <h1 class="fw-bold">Gestión de Tickets</h1>
+      <p class="text-muted">Revisa y administra el flujo de tickets</p>
     </div>
 
     <!-- Tabs -->
@@ -35,32 +36,96 @@
 
     <div class="tab-content">
       <div class="tab-pane active" id="activos">
-        <!-- Search + Button -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <input type="text" class="form-control w-50" placeholder="Buscar estado...">
-          <button class="btn btn-primary"><i class="bi bi-plus"></i> Agregar Estado</button>
+        <!-- Card container -->
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Tickets Activos</h5>
+            <button class="btn btn-primary">
+              <i class="bi bi-plus me-2"></i>Nuevo Ticket
+            </button>
+          </div>
+          <div class="card-body">
+            <!-- Search -->
+            <div class="mb-3 position-relative">
+              <i class="bi bi-search position-absolute top-50 translate-middle-y ms-3"></i>
+              <input type="text" class="form-control ps-5" placeholder="Buscar ticket...">
+            </div>
+            
+            <!-- Table -->
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                  <tr>
+                    <th>ID</th>
+                    <th>Observación</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="statusTableBody">
+                  <tr>
+                    <td colspan="4" class="text-center text-muted">Cargando datos...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <!-- Empty message -->
+            <div id="mensajeVacio" class="text-center text-muted" style="display: none;">
+              No se encontraron tickets activos
+            </div>
+          </div>
         </div>
-
-        <!-- Table -->
-        <table class="table table-bordered table-hover">
-          <thead class="table-light">
-            <tr>
-              <th>ID</th>
-              <th>Observación</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="statusTableBody">
-            <tr>
-              <td colspan="4" class="text-center text-muted">Cargando datos...</td>
-            </tr>
-          </tbody>
-        </table>
       </div>
 
       <div class="tab-pane" id="inactivos">
-        <p class="text-muted">No hay estados inactivos.</p>
+        <!-- Card container -->
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Tickets Inactivos</h5>
+          </div>
+          <div class="card-body">
+            <div id="mensajeInactivos" class="text-center text-muted">
+              No hay tickets inactivos
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Detalles Ticket -->
+  <div class="modal fade" id="ticketModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Detalles del Ticket #<span id="modalTicketId"></span></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <p><strong>Solicitante:</strong> <span id="modalSolicitante"></span></p>
+              <p><strong>Área:</strong> <span id="modalArea"></span></p>
+              <p><strong>Tipo de atención:</strong> <span id="modalTipoAtencion"></span></p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Ejecutor:</strong> <span id="modalEjecutor"></span></p>
+              <p><strong>Correo ejecutor:</strong> <span id="modalCorreoEjecutor"></span></p>
+              <p><strong>Fecha creación:</strong> <span id="modalFechaCreacion"></span></p>
+            </div>
+          </div>
+          <div class="mb-3">
+            <p><strong>Observaciones:</strong></p>
+            <p id="modalObservaciones" class="p-3 bg-light rounded"></p>
+          </div>
+          <div>
+            <p><strong>Archivo PDF:</strong> <span id="modalArchivoPdf"></span></p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
       </div>
     </div>
   </div>

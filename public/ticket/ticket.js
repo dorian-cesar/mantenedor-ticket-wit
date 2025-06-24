@@ -9,45 +9,122 @@ document.querySelectorAll('#statusTabs .nav-link').forEach(btn => {
   });
 });
 
-// Ticket data loading
+// Variables globales
+let tickets = [];
 const token = localStorage.getItem("token");
 const usuario = JSON.parse(localStorage.getItem("usuario"));
 const tabla = document.getElementById("statusTableBody");
+const searchInput = document.querySelector(".tab-pane.active input[type='text']"); // Selector del input de búsqueda
+const mensajeVacio = document.querySelector(".tab-pane.active #mensajeVacio"); // Mensaje cuando no hay datos
+const ticketModal = new bootstrap.Modal(document.getElementById('ticketModal'));
 
 if (!token || !usuario) {
-  tabla.innerHTML = `<tr><td colspan="4" class="text-danger text-center">No autorizado. Inicia sesión.</td></tr>`;
+  mostrarError("No autorizado. Inicia sesión.");
 } else {
-  fetch("https://tickets.dev-wit.com/api/tickets", {
-    headers: {
-      "Authorization": `Bearer ${token}`
-    }
-  })
-  .then(res => {
-    if (!res.ok) throw new Error("Error al obtener tickets");
-    return res.json();
-  })
-  .then(data => {
-    if (!Array.isArray(data) || data.length === 0) {
-      tabla.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No hay tickets registrados.</td></tr>`;
-      return;
-    }
+  cargarTicketsDesdeAPI();
+}
 
-    tabla.innerHTML = ""; // clear table
-    data.forEach(ticket => {
-      tabla.innerHTML += `
-        <tr>
-          <td>${ticket.id}</td>
-          <td>${ticket.observaciones || '-'}</td>
-          <td><span class="badge bg-primary">${ticket.estado || '-'}</span></td>
-          <td>
-            <button class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-pencil"></i> Editar</button>
-            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Eliminar</button>
-          </td>
-        </tr>`;
+// Función principal para cargar tickets
+async function cargarTicketsDesdeAPI() {
+  try {
+    const res = await fetch("https://tickets.dev-wit.com/api/tickets", {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
     });
-  })
-  .catch(err => {
+
+    if (!res.ok) throw new Error("Error al obtener tickets");
+
+    tickets = await res.json();
+    filtrarTickets(); // Filtramos después de cargar
+
+  } catch (err) {
     console.error(err);
-    tabla.innerHTML = `<tr><td colspan="4" class="text-danger text-center">Error al cargar los datos.</td></tr>`;
+    mostrarError("Error al cargar los datos.");
+  }
+}
+
+// Función de filtrado
+function filtrarTickets() {
+  const termino = searchInput.value.toLowerCase();
+  
+  const ticketsFiltrados = tickets.filter(ticket => 
+    (ticket.id.toString().includes(termino)) ||
+    (ticket.observaciones && ticket.observaciones.toLowerCase().includes(termino)) ||
+    (ticket.estado && ticket.estado.toLowerCase().includes(termino)) ||
+    (ticket.solicitante && ticket.solicitante.toLowerCase().includes(termino)) ||
+    (ticket.area && ticket.area.toLowerCase().includes(termino)) ||
+    (ticket.tipo_atencion && ticket.tipo_atencion.toLowerCase().includes(termino)) ||
+    (ticket.ejecutor && ticket.ejecutor.toLowerCase().includes(termino))
+  );
+
+  renderizarTickets(ticketsFiltrados);
+}
+
+// Función para renderizar tickets
+function renderizarTickets(ticketsARenderizar) {
+  tabla.innerHTML = "";
+
+  if (!ticketsARenderizar || ticketsARenderizar.length === 0) {
+    mostrarMensajeVacio("No hay tickets registrados.");
+    return;
+  }
+
+  ticketsARenderizar.forEach(ticket => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${ticket.id}</td>
+      <td>${ticket.observaciones || '-'}</td>
+      <td>
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="badge bg-primary">${ticket.estado || '-'}</span>
+          <img src="/img/ojo.png" alt="Ver observación" style="width: 20px; cursor: pointer;" class="ms-2 view-details">
+        </div>
+      </td>
+      <td>
+        <button class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-pencil"></i> Editar</button>
+        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Eliminar</button>
+      </td>
+    `;
+    
+    row.querySelector('.view-details').addEventListener('click', () => {
+      mostrarDetallesTicket(ticket);
+    });
+    
+    tabla.appendChild(row);
   });
+}
+
+// Función para mostrar detalles del ticket (sin cambios)
+function mostrarDetallesTicket(ticket) {
+  document.getElementById('modalTicketId').textContent = ticket.id;
+  document.getElementById('modalSolicitante').textContent = ticket.solicitante || '-';
+  document.getElementById('modalArea').textContent = ticket.area || '-';
+  document.getElementById('modalTipoAtencion').textContent = ticket.tipo_atencion || '-';
+  document.getElementById('modalEjecutor').textContent = ticket.ejecutor || '-';
+  document.getElementById('modalCorreoEjecutor').textContent = ticket.corre_ejecutor || '-';
+  document.getElementById('modalFechaCreacion').textContent = new Date(ticket.fecha_creacion).toLocaleString() || '-';
+  document.getElementById('modalObservaciones').textContent = ticket.observaciones || '-';
+  document.getElementById('modalArchivoPdf').textContent = ticket.archivo_pdf || 'No hay archivo adjunto';
+  
+  ticketModal.show();
+}
+
+// Funciones auxiliares
+function mostrarError(mensaje) {
+  tabla.innerHTML = `<tr><td colspan="4" class="text-danger text-center">${mensaje}</td></tr>`;
+}
+
+function mostrarMensajeVacio(mensaje) {
+  if (mensajeVacio) {
+    mensajeVacio.style.display = "block";
+    mensajeVacio.textContent = mensaje;
+  } else {
+    tabla.innerHTML = `<tr><td colspan="4" class="text-center text-muted">${mensaje}</td></tr>`;
+  }
+}
+
+// Event listener para el input de búsqueda
+if (searchInput) {
+  searchInput.addEventListener('input', filtrarTickets);
 }

@@ -12,7 +12,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const toastEl = document.getElementById("toastPassword");
 
   function renderUsuarios(data) {
-    tablaUsuarios.innerHTML = "";
+  const currentUser = JSON.parse(localStorage.getItem("usuario"));
+  tablaUsuarios.innerHTML = "";
     if (data.length === 0) {
       mensajeVacio.style.display = "block";
       return;
@@ -29,14 +30,22 @@ document.addEventListener("DOMContentLoaded", () => {
         <td>${usuario.email}</td>
         <td><span class="badge bg-${getRolColor(usuario.rol)}">${usuario.rol || 'Sin rol'}</span></td>
         <td>
-          <button class="btn btn-sm btn-outline-primary me-1 btn-editar" data-id="${usuario.id}" data-nombre="${usuario.nombre}" data-email="${usuario.email}" data-rol="${usuario.rol}"><i class="bi bi-pencil"></i></button>                 
-          <button class="btn btn-sm btn-outline-danger btn-eliminar" data-id="${usuario.id}">
-            <i class="bi bi-trash"></i>
+          <button class="btn btn-sm btn-outline-primary me-1 btn-editar" data-id="${usuario.id}" data-nombre="${usuario.nombre}" data-email="${usuario.email}" data-rol="${usuario.rol}">
+            <i class="bi bi-pencil"></i>
           </button>
+          ${usuario.id === currentUser.id
+            ? `<button class="btn btn-sm btn-secondary" disabled title="No puedes eliminar tu propia cuenta">
+                <i class="bi bi-lock"></i>
+              </button>`
+            : `<button class="btn btn-sm btn-outline-danger btn-eliminar" data-id="${usuario.id}">
+                <i class="bi bi-trash"></i>
+              </button>`
+          }
         </td>
       `;
       tablaUsuarios.appendChild(fila);
     });
+
 
     document.querySelectorAll(".btn-editar").forEach(btn => {
       btn.addEventListener("click", () => {
@@ -49,21 +58,14 @@ document.addEventListener("DOMContentLoaded", () => {
         });  
 
         document.querySelectorAll(".btn-eliminar").forEach(btn => {
-            btn.addEventListener("click", () => {
-                const id = parseInt(btn.dataset.id);
-                const currentUser = JSON.parse(localStorage.getItem("usuario"));
+          btn.addEventListener("click", () => {
+            const id = parseInt(btn.dataset.id);
 
-                if (id === currentUser.id) {
-                document.getElementById("toastAutoEliminar").style.display = 'block';
-                return;
-                }
-
-                document.getElementById("eliminarId").value = id;
-                document.getElementById("passwordEliminar").value = "";
-                new bootstrap.Modal(document.getElementById("modalEliminarUsuario")).show();
-            });
+            document.getElementById("eliminarId").value = id;
+            document.getElementById("passwordEliminar").value = "";
+            new bootstrap.Modal(document.getElementById("modalEliminarUsuario")).show();
+          });
         });
-
     }
 
     document.getElementById("formEliminarUsuario").addEventListener("submit", async (e) => {

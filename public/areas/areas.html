@@ -111,24 +111,17 @@
     </div>
   <script>
     // Cargar el navbar desde archivo externo
-    fetch("../navbar.html")
-      .then(res => {
-        if (!res.ok) throw new Error("No se pudo cargar el navbar");
-        return res.text();
-      })
+    fetch("/navbar.html")
+      .then(res => res.text())
       .then(html => {
         document.getElementById("navbar-container").innerHTML = html;
-      })
-      .catch(error => {
-        console.error("Error cargando navbar:", error);
-        // Puedes mostrar un navbar básico de respaldo si falla
-        document.getElementById("navbar-container").innerHTML = `
-          <nav class="navbar bg-light">
-            <div class="container">
-              <a class="navbar-brand" href="#">Sistema de Tickets</a>
-            </div>
-          </nav>`;
-      });
+
+        // Cargar el JS y luego inicializar
+        const script = document.createElement("script");
+        script.src = "/js/navbar.js";
+        script.onload = () => inicializarNavbar();
+        document.body.appendChild(script);
+    });
   </script> 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="areas.js"></script>

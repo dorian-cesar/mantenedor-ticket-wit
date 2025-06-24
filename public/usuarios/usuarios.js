@@ -207,11 +207,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const nombre = document.getElementById("editarNombre").value.trim();
     const email = document.getElementById("editarEmail").value.trim();
     const rol = document.getElementById("editarRol").value;
+    const password = document.getElementById("editarPassword").value.trim();
+    const confirmar = document.getElementById("confirmarEditarPassword").value.trim();
 
     if (!id || !nombre || !email || !rol) {
-      alert("Todos los campos son obligatorios.");
+      alert("Todos los campos obligatorios deben completarse.");
       return;
     }
+
+    if (password) {
+      if (password.length < 8 || password !== confirmar) {
+        alert("La nueva contraseña debe tener al menos 8 caracteres y coincidir.");
+        return;
+      }
+    }
+
+    const payload = { nombre, email, rol };
+    if (password) payload.password = password;
 
     try {
       const res = await fetch(`https://tickets.dev-wit.com/api/users/${id}`, {
@@ -220,32 +232,23 @@ document.addEventListener("DOMContentLoaded", () => {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify({ nombre, email, rol })
+        body: JSON.stringify(payload)
       });
 
       if (!res.ok) {
-        let errorData = await res.json();
+        const errorData = await res.json();
         document.getElementById("toastEditarError").style.display = 'block';
         throw new Error(errorData?.message || `Error ${res.status}`);
       }
 
-      const actualizado = await res.json();
-        // Mostrar toast de éxito
-        document.getElementById("toastEditarExito").style.display = 'block';
+      document.getElementById("toastEditarExito").style.display = 'block';
+      await cargarUsuariosDesdeAPI();
+      searchInput.dispatchEvent(new Event("input"));
 
-        // Cargar nuevamente todos los usuarios desde la API
-        await cargarUsuariosDesdeAPI();
-
-        // Reaplicar el filtro actual (si existe)
-        searchInput.dispatchEvent(new Event("input"));
-
-
-      // Cerrar modal tras 1.5s
       setTimeout(() => {
         bootstrap.Modal.getInstance(document.getElementById("modalEditarUsuario")).hide();
         document.getElementById("toastEditarExito").style.display = 'none';
       }, 1500);
-
     } catch (error) {
       console.error("Error al actualizar usuario:", error);
     }

@@ -69,7 +69,7 @@
 
       <!-- Estados de Ticket -->
       <div class="col-12 col-md-6 col-lg-3">
-        <a href="/statuses" class="text-decoration-none text-dark">
+        <a href="/tickets/tickets.html" class="text-decoration-none text-dark">
           <div class="card h-100 shadow-sm hover-shadow">
             <div class="card-body">
               <div class="bg-warning text-white rounded mb-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
@@ -139,24 +139,18 @@
   <script>
     // Cargar el navbar desde archivo externo
     fetch("navbar.html")
-      .then(res => {
-        if (!res.ok) throw new Error("No se pudo cargar el navbar");
-        return res.text();
-      })
+      .then(res => res.text())
       .then(html => {
         document.getElementById("navbar-container").innerHTML = html;
-      })
-      .catch(error => {
-        console.error("Error cargando navbar:", error);
-        // Puedes mostrar un navbar básico de respaldo si falla
-        document.getElementById("navbar-container").innerHTML = `
-          <nav class="navbar bg-light">
-            <div class="container">
-              <a class="navbar-brand" href="#">Sistema de Tickets</a>
-            </div>
-          </nav>`;
-      });
+
+        // Cargar el JS y luego inicializar
+        const script = document.createElement("script");
+        script.src = "/js/navbar.js";
+        script.onload = () => inicializarNavbar();
+        document.body.appendChild(script);
+    });
   </script> 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
   <script src="/js/dashboard.js"></script> 
 </body>
 </html>

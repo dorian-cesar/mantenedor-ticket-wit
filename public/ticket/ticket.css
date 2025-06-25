@@ -22,3 +22,8 @@
   background-color: #27ae60 !important;
   color: #fff;
 }
+
+.badge-estado-rechazado {
+  background-color: #ca0000 !important;
+  color: #fff;
+}

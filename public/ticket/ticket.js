@@ -134,6 +134,7 @@ function getBadgeClass(estado) {
   if (normalized === "pendiente por presupuesto") return "badge-estado-pendiente";
   if (normalized === "cancelado") return "badge-estado-cancelado";
   if (normalized === "listo") return "badge-estado-listo";
+  if (normalized === "Rechazado") return "badge-estado-rechazado";
 
   return "bg-secondary"; // default
 }

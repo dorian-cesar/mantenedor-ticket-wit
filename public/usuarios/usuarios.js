@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("editarEmail").value = btn.dataset.email;
         document.getElementById("editarRol").value = btn.dataset.rol;
 
-        // Llama a cargar supervisores con el ID seleccionado (deberás obtenerlo de tu dataset o petición previa si no viene aún)
+        // Llama a cargar supervisores con el ID seleccionado
         const usuarioEditado = usuarios.find(u => u.id === parseInt(btn.dataset.id));
         const idSupervisor = usuarioEditado?.id_jefatura || null;
 

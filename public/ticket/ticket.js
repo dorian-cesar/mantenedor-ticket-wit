@@ -100,8 +100,26 @@ function mostrarDetallesTicket(ticket) {
   document.getElementById('modalCorreoEjecutor').textContent = ticket.corre_ejecutor || '-';
   document.getElementById('modalFechaCreacion').textContent = new Date(ticket.fecha_creacion).toLocaleString() || '-';
   document.getElementById('modalObservaciones').textContent = ticket.observaciones || '-';
-  document.getElementById('modalArchivoPdf').textContent = ticket.archivo_pdf || 'No hay archivo adjunto';
   
+  const archivoContainer = document.getElementById('modalArchivoPdf');
+  archivoContainer.innerHTML = '';
+
+  if (ticket.archivo_pdf) {
+    const fileName = ticket.archivo_pdf;
+    const baseURL = "https://tickets.dev-wit.com/uploads/";
+    const fullURL = baseURL + encodeURIComponent(fileName);
+
+    const enlace = document.createElement('a');
+    enlace.href = fullURL;
+    enlace.target = '_blank';
+    enlace.rel = 'noopener noreferrer';
+    enlace.textContent = 'Ver PDF';
+    enlace.classList.add('btn', 'btn-sm', 'btn-outline-primary');
+    archivoContainer.appendChild(enlace);
+  } else {
+    archivoContainer.textContent = 'No hay archivo adjunto';
+  }
+
   ticketModal.show();
 }
 

@@ -13,6 +13,11 @@
   color: #fff;
 }
 
+.badge-usuario-jefatura {
+  background-color: #f39c12 !important;
+  color: #fff;
+}
+
 .toast-center {
 position: absolute;
 top: 50%;

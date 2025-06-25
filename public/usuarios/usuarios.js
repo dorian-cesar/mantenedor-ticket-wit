@@ -21,6 +21,13 @@ document.addEventListener("DOMContentLoaded", () => {
       mensajeVacio.style.display = "none";
     }
 
+    const mapaUsuarios = {};
+    data.forEach(u => {
+      if (u?.id) {
+        mapaUsuarios[u.id] = u.nombre;
+      }
+    });
+
     data.forEach(usuario => {
       if (!usuario || !usuario.nombre || !usuario.email || !usuario.rol) return;
 
@@ -29,6 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <td>${usuario.nombre}</td>
         <td>${usuario.email}</td>
         <td><span class="badge ${getRolBadgeClass(usuario.rol)}">${usuario.rol || 'Sin rol'}</span></td>
+        <td>${mapaUsuarios[usuario.id_jefatura] || '-'}</td>
         <td>
           <button class="btn btn-sm btn-outline-primary me-1 btn-editar" data-id="${usuario.id}" data-nombre="${usuario.nombre}" data-email="${usuario.email}" data-rol="${usuario.rol}">
             <i class="bi bi-pencil"></i>

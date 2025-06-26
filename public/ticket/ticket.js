@@ -1,22 +1,17 @@
-document.querySelectorAll('#statusTabs .nav-link').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('#statusTabs .nav-link').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-
-    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-    const target = btn.getAttribute('data-bs-target');
-    document.querySelector(target).classList.add('active');
-  });
-});
-
 // Variables globales
 let tickets = [];
+let todosLosTickets = [];
 const token = localStorage.getItem("token");
 const usuario = JSON.parse(localStorage.getItem("usuario"));
 const tabla = document.getElementById("statusTableBody");
 const searchInput = document.querySelector(".tab-pane.active input[type='text']"); // Selector del input de búsqueda
 const mensajeVacio = document.querySelector(".tab-pane.active #mensajeVacio"); // Mensaje cuando no hay datos
 const ticketModal = new bootstrap.Modal(document.getElementById('ticketModal'));
+
+//Variables de paginación
+let paginaActual = 1;
+const registrosPorPagina = 15;
+let ticketsFiltrados = [];
 
 if (!token || !usuario) {
   mostrarError("No autorizado. Inicia sesión.");
@@ -26,29 +21,47 @@ if (!token || !usuario) {
 
 // Función principal para cargar tickets
 async function cargarTicketsDesdeAPI() {
-  try {
-    const res = await fetch("https://tickets.dev-wit.com/api/tickets", {
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
-    });
+  const res = await fetch("https://tickets.dev-wit.com/api/tickets", {
+    headers: { "Authorization": `Bearer ${token}` }
+  });
 
-    if (!res.ok) throw new Error("Error al obtener tickets");
+  if (!res.ok) throw new Error("Error al obtener tickets");
 
-    tickets = await res.json();
-    filtrarTickets(); // Filtramos después de cargar
+  todosLosTickets = await res.json();
+  tickets = todosLosTickets
+    .sort((a, b) => new Date(b.fecha_creacion) - new Date(a.fecha_creacion))
+    .slice(0, 200);
 
-  } catch (err) {
-    console.error(err);
-    mostrarError("Error al cargar los datos.");
-  }
+  ticketsFiltrados = [...tickets];
+  filtrarTickets();
 }
+
+
+// Asegurar que se actualice la paginación al cambiar de pestaña
+document.querySelectorAll('#statusTabs .nav-link').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#statusTabs .nav-link').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    const target = btn.getAttribute('data-bs-target');
+    document.querySelector(target).classList.add('active');
+    
+    // Resetear paginación al cambiar de pestaña
+    paginaActual = 1;
+    filtrarTickets();
+  });
+});
 
 // Función de filtrado
 function filtrarTickets() {
-  const termino = searchInput.value.toLowerCase();
-  
-  const ticketsFiltrados = tickets.filter(ticket => 
+  const termino = searchInput.value.toLowerCase().trim();
+
+  const origen = termino === ""
+    ? tickets // solo los 200 más recientes
+    : todosLosTickets; // todos los registros si hay búsqueda
+
+  ticketsFiltrados = origen.filter(ticket => 
     (ticket.id.toString().includes(termino)) ||
     (ticket.observaciones && ticket.observaciones.toLowerCase().includes(termino)) ||
     (ticket.estado && ticket.estado.toLowerCase().includes(termino)) ||
@@ -58,14 +71,27 @@ function filtrarTickets() {
     (ticket.ejecutor && ticket.ejecutor.toLowerCase().includes(termino))
   );
 
-  renderizarTickets(ticketsFiltrados);
+  paginaActual = 1;
+  renderizarTickets();
+  actualizarPaginacion();
 }
 
-// Función para renderizar tickets
-function renderizarTickets(ticketsARenderizar) {
-  tabla.innerHTML = ""; 
 
-  ticketsARenderizar.forEach(ticket => {
+// Función para renderizar tickets
+function renderizarTickets() {
+  tabla.innerHTML = "";
+  
+  // Calcular índices para la paginación
+  const inicio = (paginaActual - 1) * registrosPorPagina;
+  const fin = inicio + registrosPorPagina;
+  const ticketsPagina = ticketsFiltrados.slice(inicio, fin);
+
+  if (ticketsPagina.length === 0) {
+    mostrarMensajeVacio("No se encontraron tickets");
+    return;
+  }
+
+  ticketsPagina.forEach(ticket => {
     const row = document.createElement('tr');
     row.innerHTML = `
       <td>${ticket.id}</td>
@@ -88,6 +114,64 @@ function renderizarTickets(ticketsARenderizar) {
     
     tabla.appendChild(row);
   });
+
+  // Actualizar información de paginación
+  document.getElementById('paginacion-info').textContent = 
+    `Mostrando ${ticketsPagina.length} de ${ticketsFiltrados.length} tickets`;
+}
+
+// Función para actualizar controles de paginación
+function actualizarPaginacion() {
+  const totalPaginas = Math.ceil(ticketsFiltrados.length / registrosPorPagina);
+  const paginacionControl = document.getElementById('paginacion-control');
+  paginacionControl.innerHTML = '';
+
+  if (totalPaginas <= 1) return;
+
+  // Botón Anterior
+  const liAnterior = document.createElement('li');
+  liAnterior.className = `page-item ${paginaActual === 1 ? 'disabled' : ''}`;
+  liAnterior.innerHTML = `<a class="page-link" href="#" aria-label="Anterior">&laquo;</a>`;
+  liAnterior.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (paginaActual > 1) {
+      paginaActual--;
+      renderizarTickets();
+      actualizarPaginacion();
+    }
+  });
+  paginacionControl.appendChild(liAnterior);
+
+  // Números de página
+  const inicioPaginas = Math.max(1, paginaActual - 2);
+  const finPaginas = Math.min(totalPaginas, paginaActual + 2);
+
+  for (let i = inicioPaginas; i <= finPaginas; i++) {
+    const li = document.createElement('li');
+    li.className = `page-item ${i === paginaActual ? 'active' : ''}`;
+    li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+    li.addEventListener('click', (e) => {
+      e.preventDefault();
+      paginaActual = i;
+      renderizarTickets();
+      actualizarPaginacion();
+    });
+    paginacionControl.appendChild(li);
+  }
+
+  // Botón Siguiente
+  const liSiguiente = document.createElement('li');
+  liSiguiente.className = `page-item ${paginaActual === totalPaginas ? 'disabled' : ''}`;
+  liSiguiente.innerHTML = `<a class="page-link" href="#" aria-label="Siguiente">&raquo;</a>`;
+  liSiguiente.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (paginaActual < totalPaginas) {
+      paginaActual++;
+      renderizarTickets();
+      actualizarPaginacion();
+    }
+  });
+  paginacionControl.appendChild(liSiguiente);
 }
 
 // Función para mostrar detalles del ticket (sin cambios)

@@ -14,8 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
       nombre: user.nombre,
       email: user.email,
       telefono: "",
-      cargo: user.rol === "admin" ? "Administrador del Sistema" : "Usuario",
-      departamento: "Sin asignar",
+      cargo: user.rol === "admin" ? "Administrador del Sistema" : "Usuario",      
       ubicacion: "Chile",
       biografia: "",
       fechaRegistro: "",
@@ -70,8 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('nombre').value = profile.nombre;
     document.getElementById('email').value = profile.email;
     document.getElementById('telefono').value = profile.telefono;
-    document.getElementById('cargo').value = profile.cargo;
-    document.getElementById('departamento').value = profile.departamento;
+    document.getElementById('cargo').value = profile.cargo;    
     document.getElementById('ubicacion').value = profile.ubicacion;
     document.getElementById('biografia').value = profile.biografia;
     
@@ -96,8 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Profile header
     document.getElementById('profile-name').textContent = profile.nombre;
     document.getElementById('profile-position').textContent = profile.cargo;
-    document.getElementById('profile-email').textContent = profile.email;
-    document.getElementById('profile-department').textContent = profile.departamento;
+    document.getElementById('profile-email').textContent = profile.email;    
     document.getElementById('profile-location').textContent = profile.ubicacion;
     document.getElementById('tickets-resolved').textContent = profile.ticketsResueltos;
     document.getElementById('satisfaction-score').textContent = profile.puntuacionSatisfaccion;
@@ -136,8 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
       nombre: document.getElementById('nombre').value,
       email: document.getElementById('email').value,
       telefono: document.getElementById('telefono').value,
-      cargo: document.getElementById('cargo').value,
-      departamento: document.getElementById('departamento').value,
+      cargo: document.getElementById('cargo').value,      
       ubicacion: document.getElementById('ubicacion').value,
       biografia: document.getElementById('biografia').value,
       timezone: document.getElementById('timezone').value,
@@ -191,8 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
         nombre: document.getElementById('nombre').value,
         email: document.getElementById('email').value,
         telefono: document.getElementById('telefono').value,
-        cargo: document.getElementById('cargo').value,
-        departamento: document.getElementById('departamento').value,
+        cargo: document.getElementById('cargo').value,        
         ubicacion: document.getElementById('ubicacion').value,
         biografia: document.getElementById('biografia').value,
         timezone: document.getElementById('timezone').value,

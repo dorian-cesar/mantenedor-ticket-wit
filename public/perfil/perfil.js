@@ -115,20 +115,41 @@ document.addEventListener('DOMContentLoaded', function() {
   
 
   // Show toast notification
+  let mouseX = 0;
+  let mouseY = 0;
+
+  // Captura la posición actual del mouse en todo momento
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
+
   function showToast(title, message, isError = false) {
     toastTitle.textContent = title;
     toastBody.textContent = message;
-    
+
+    // Posición dinámica
+    toastEl.style.position = 'fixed';
+    toastEl.style.left = `${mouseX}px`;
+    toastEl.style.top = `${mouseY}px`;
+    toastEl.style.zIndex = 9999;
+
+    const header = toastEl.querySelector('.toast-header');
+
+    // Limpiar clases previas
+    header.classList.remove('bg-danger', 'bg-success', 'text-white');
+
+    // Estilo dinámico según tipo
     if (isError) {
-      toastEl.querySelector('.toast-header').classList.add('bg-danger', 'text-white');
+      header.classList.add('bg-danger', 'text-white');
     } else {
-      toastEl.querySelector('.toast-header').classList.remove('bg-danger', 'text-white');
+      header.classList.add('bg-success', 'text-white');
     }
-    
+
     toast.show();
   }
 
-  // Check for changes
+  // Check para los cambios en el perfil
   function checkForChanges() {
     const currentValues = {
       nombre: document.getElementById('nombre').value,
@@ -245,32 +266,76 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // Handle password change
-  function handlePasswordChange(event) {
+  async function handlePasswordChange(event) {
     event.preventDefault();
-    const currentPassword = document.getElementById('current-password').value;
-    const newPassword = document.getElementById('new-password').value;
-    const confirmPassword = document.getElementById('confirm-password').value;
-    
-    if (newPassword !== confirmPassword) {
-      showToast('Error', 'Las contraseñas no coinciden', true);
+
+    const currentPassword = document.getElementById('current-password').value.trim();
+    const newPassword = document.getElementById('new-password').value.trim();
+    const confirmPassword = document.getElementById('confirm-password').value.trim();
+
+    if (newPassword.length < 8) {
+      showToast('Error', 'La nueva contraseña debe tener al menos 8 caracteres.', true);
       return;
     }
-    
-    // Simulate password change
-    setTimeout(() => {
-      showToast('Contraseña actualizada', 'Tu contraseña ha sido cambiada exitosamente');
+
+    if (newPassword !== confirmPassword) {
+      showToast('Error', 'Las contraseñas no coinciden.', true);
+      return;
+    }
+
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+    const token = localStorage.getItem("token");
+
+    if (!usuario || !token) {
+      showToast('Error', 'Sesión inválida. Vuelve a iniciar sesión.', true);
+      return;
+    }
+
+    const payload = {
+      nombre: usuario.nombre,
+      email: usuario.email,
+      rol: usuario.rol,
+      password: newPassword
+    };
+
+    try {
+      const res = await fetch(`https://tickets.dev-wit.com/api/users/${usuario.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        const mensaje = data.message || "Error al cambiar la contraseña.";
+        showToast('Error', mensaje, true);
+        return;
+      }
+
+      showToast('Contraseña actualizada', 'Tu contraseña ha sido cambiada exitosamente.');
       document.getElementById('password-change-form').reset();
-    }, 1000);
+    } catch (error) {
+      console.error("Error en el cambio de contraseña:", error);
+      showToast('Error', 'No se pudo conectar con el servidor.', true);
+    }
   }
 
   // Initialize event listeners
   function initEventListeners() {
     // Form inputs
     const inputs = document.querySelectorAll('input, select, textarea');
+
+    // Excluir inputs del formulario de cambio de contraseña
+    const ignoredIds = ['current-password', 'new-password', 'confirm-password'];
+
     inputs.forEach(input => {
-      input.addEventListener('change', checkForChanges);
-      input.addEventListener('input', checkForChanges);
+      if (!ignoredIds.includes(input.id)) {
+        input.addEventListener('change', checkForChanges);
+        input.addEventListener('input', checkForChanges);
+      }
     });
     
     // Buttons

@@ -10,6 +10,10 @@
   --purple-600: #9333ea;
 }
 
+#toast {
+  max-width: 300px;  
+}
+
 .perfil-container {
   margin-top: 40px; /* o el valor que necesites */
 }

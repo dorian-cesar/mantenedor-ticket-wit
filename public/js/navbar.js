@@ -23,7 +23,7 @@ function inicializarNavbar() {
   rolEl.textContent = usuario.rol;
   dropdownNombre.textContent = usuario.nombre;
   dropdownEmail.textContent = usuario.email;
-  avatar.src = usuario.avatar || "/img/usuario.png"; // Usa un avatar por defecto si no hay
+  avatar.src = usuario.avatar || "/img/usuario.png"; 
 
   btnLogout.addEventListener("click", () => {
     localStorage.removeItem("token");

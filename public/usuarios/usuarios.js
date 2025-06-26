@@ -209,7 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
         bootstrap.Modal.getInstance(document.getElementById("modalUsuario")).hide();
         toastExito.style.display = 'none';
         e.target.reset();
-      }, 2500);
+      }, 1500);
 
     } catch (error) {
       console.error("Error al crear usuario:", error);
@@ -228,15 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const confirmar = document.getElementById("confirmarEditarPassword").value.trim();
     const supervisorId = document.getElementById("editarSupervisor").value;
 
-    if (supervisorId) {
-      payload.id_jefatura = parseInt(supervisorId);
-    }
-
-    if (!id || !nombre || !email || !rol) {
-      alert("Todos los campos obligatorios deben completarse.");
-      return;
-    }
-
+    // Primero validar contraseña si se proporcionó
     if (password) {
       if (password.length < 8 || password !== confirmar) {
         alert("La nueva contraseña debe tener al menos 8 caracteres y coincidir.");
@@ -244,8 +236,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    // Luego crear el objeto payload
     const payload = { nombre, email, rol };
+    
+    // Agregar campos condicionales
     if (password) payload.password = password;
+    if (supervisorId) payload.id_jefatura = parseInt(supervisorId);
 
     try {
       const res = await fetch(`https://tickets.dev-wit.com/api/users/${id}`, {

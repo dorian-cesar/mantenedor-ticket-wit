@@ -15,8 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
       email: user.email,
       telefono: "",
       cargo: user.rol === "admin" ? "Administrador del Sistema" : "Usuario",      
-      ubicacion: "Chile",
-      biografia: "",
+      ubicacion: "Chile",      
       fechaRegistro: "",
       ultimoAcceso: "",
       timezone: "America/Santiago",
@@ -70,8 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('email').value = profile.email;
     document.getElementById('telefono').value = profile.telefono;
     document.getElementById('cargo').value = profile.cargo;    
-    document.getElementById('ubicacion').value = profile.ubicacion;
-    document.getElementById('biografia').value = profile.biografia;
+    document.getElementById('ubicacion').value = profile.ubicacion;    
     
     // Preferences
     document.getElementById('timezone').value = profile.timezone;
@@ -96,8 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('profile-position').textContent = profile.cargo;
     document.getElementById('profile-email').textContent = profile.email;    
     document.getElementById('profile-location').textContent = profile.ubicacion;
-    document.getElementById('tickets-resolved').textContent = profile.ticketsResueltos;
-    document.getElementById('satisfaction-score').textContent = profile.puntuacionSatisfaccion;
+    
     
     // Set avatar fallback initials
     avatarFallback.textContent = getInitials(profile.nombre);
@@ -134,8 +131,7 @@ document.addEventListener('DOMContentLoaded', function() {
       email: document.getElementById('email').value,
       telefono: document.getElementById('telefono').value,
       cargo: document.getElementById('cargo').value,      
-      ubicacion: document.getElementById('ubicacion').value,
-      biografia: document.getElementById('biografia').value,
+      ubicacion: document.getElementById('ubicacion').value,      
       timezone: document.getElementById('timezone').value,
       idioma: document.getElementById('idioma').value,
       formatoFecha: document.getElementById('formatoFecha').value,
@@ -188,8 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
         email: document.getElementById('email').value,
         telefono: document.getElementById('telefono').value,
         cargo: document.getElementById('cargo').value,        
-        ubicacion: document.getElementById('ubicacion').value,
-        biografia: document.getElementById('biografia').value,
+        ubicacion: document.getElementById('ubicacion').value,        
         timezone: document.getElementById('timezone').value,
         idioma: document.getElementById('idioma').value,
         formatoFecha: document.getElementById('formatoFecha').value,

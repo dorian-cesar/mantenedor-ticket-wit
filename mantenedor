@@ -67,3 +67,7 @@ Crear nuevo estado
 
 Editar/eliminar estados
 
+Actualizar get al endpoint https://tickets.dev-wit.com/api/tickets, debería traer todos los campos del registro de la db
+
+Actualizar put al endpoint https://tickets.dev-wit.com/api/users/ debe permitir agregar id_jefatura al editar usuario
+

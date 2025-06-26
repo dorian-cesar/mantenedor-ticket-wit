@@ -52,8 +52,10 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error('Respuesta inválida del servidor.');
       }
 
-      if (resultado.user?.rol?.toLowerCase() !== "admin") {
-        throw new Error("No tienes permitido acceder.");
+      const rol = resultado.user?.rol?.toLowerCase();
+
+      if (rol !== "admin" && rol !== "jefatura") {
+        throw new Error("Acceso denegado. Roles permitidos: 'admin' o 'jefatura'.");
       }
 
       // Guardar token y datos del usuario en localStorage

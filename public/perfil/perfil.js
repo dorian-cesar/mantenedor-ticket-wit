@@ -3,41 +3,50 @@ document.addEventListener('DOMContentLoaded', function() {
   const toastEl = document.getElementById('toast');
   const toast = new bootstrap.Toast(toastEl, { autohide: true, delay: 5000 });
   
-  // Profile data
-  let profile = {
-    id: 1,
-    nombre: "Juan Pérez",
-    email: "juan@empresa.com",
-    telefono: "+56 9 1234 5678",
-    cargo: "Administrador de Sistema",
-    departamento: "Tecnología",
-    ubicacion: "Santiago, Chile",
-    biografia: "Administrador de sistemas con 5 años de experiencia en gestión de tickets y soporte técnico.",
-    fechaRegistro: "2023-01-15T10:00:00.000Z",
-    ultimoAcceso: "2025-06-24T14:30:00.000Z",
-    timezone: "America/Santiago",
-    idioma: "es",
-    formatoFecha: "DD/MM/YYYY",
-    tema: "light",
-    notificacionesEmail: true,
-    notificacionesPush: true,
-    notificacionesSMS: false,
-    frecuenciaNotificaciones: "immediate",
-    notificarTicketsAsignados: true,
-    notificarTicketsVencidos: true,
-    notificarMenciones: true,
-    twoFactorEnabled: false,
-    ultimoCambioPassword: "2025-05-15T10:00:00.000Z",
-    sesionesActivas: 3,
-    ticketsCreados: 45,
-    ticketsResueltos: 42,
-    tiempoPromedioRespuesta: 2.5,
-    puntuacionSatisfaccion: 4.8
-  };
+  // Obtener usuario desde localStorage
+  const userFromStorage = localStorage.getItem('usuario');
+
+  let profile;
+  if (userFromStorage) {
+    const user = JSON.parse(userFromStorage);
+    profile = {
+      id: user.id,
+      nombre: user.nombre,
+      email: user.email,
+      telefono: "",
+      cargo: user.rol === "admin" ? "Administrador del Sistema" : "Usuario",
+      departamento: "Sin asignar",
+      ubicacion: "Chile",
+      biografia: "",
+      fechaRegistro: "",
+      ultimoAcceso: "",
+      timezone: "America/Santiago",
+      idioma: "es",
+      formatoFecha: "DD/MM/YYYY",
+      tema: "light",
+      notificacionesEmail: true,
+      notificacionesPush: true,
+      notificacionesSMS: false,
+      frecuenciaNotificaciones: "immediate",
+      notificarTicketsAsignados: true,
+      notificarTicketsVencidos: true,
+      notificarMenciones: true,
+      twoFactorEnabled: false,
+      ultimoCambioPassword: "",
+      sesionesActivas: 1,
+      ticketsCreados: 0,
+      ticketsResueltos: 0,
+      tiempoPromedioRespuesta: 0,
+      puntuacionSatisfaccion: 0
+    };
+  } else {
+    alert("No se encontró información del usuario. Por favor inicie sesión.");
+    window.location.href = "/login.html";
+  }
+
 
   let originalProfile = JSON.parse(JSON.stringify(profile));
-  let hasChanges = false;
-  let loading = false;
+  let hasChanges = false;  
 
   // DOM elements
   const changesAlert = document.getElementById('changes-alert');
@@ -105,12 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
       .toUpperCase()
       .slice(0, 2);
   }
-
-  // Format date
-  function formatDate(dateString) {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('es-ES', options);
-  }
+  
 
   // Show toast notification
   function showToast(title, message, isError = false) {

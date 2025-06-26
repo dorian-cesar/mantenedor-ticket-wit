@@ -89,6 +89,8 @@ document.getElementById("formArea").addEventListener("submit", async (e) => {
         body: JSON.stringify({ nombre, descripcion }),
       })
 
+      showToast("Éxito", "Aŕea editada exitosamente.")
+
       if (!res.ok) throw new Error("Error al actualizar el área")
 
       // Refrescar áreas
@@ -102,17 +104,19 @@ document.getElementById("formArea").addEventListener("submit", async (e) => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ nombre, descripcion }),
+        
       })
 
       if (!res.ok) throw new Error("Error al crear el área")
 
+      showToast("Éxito", "Aŕea creada exitosamente.")
       await cargarAreasDesdeAPI()
     }
 
     modal.hide()
   } catch (error) {
     console.error(error)
-    alert("Ocurrió un error al guardar el área")
+    showToast("Error", "Ocurrió un error al guardar el área", true);    
   }
 })
 
@@ -156,7 +160,7 @@ document.getElementById("formEliminarArea").addEventListener("submit", async (e)
     });
 
     if (!loginRes.ok) {
-      document.getElementById("toastEliminarAreaError").style.display = 'block';
+      showToast("Error", "Contraseña incorrecta", true);
       return;
     }
 
@@ -170,8 +174,10 @@ document.getElementById("formEliminarArea").addEventListener("submit", async (e)
       body: JSON.stringify({ password })
     });
 
+    showToast("Éxito", "Área eliminada correctamente", true); 
+
     if (!res.ok) {
-      document.getElementById("toastEliminarAreaError").style.display = 'block';
+      showToast("Error", "Hubo un problema al eliminar", true);
       return;
     }
 
@@ -179,7 +185,7 @@ document.getElementById("formEliminarArea").addEventListener("submit", async (e)
     bootstrap.Modal.getInstance(document.getElementById("modalEliminarArea")).hide();
   } catch (error) {
     console.error("Error al eliminar área:", error);
-    document.getElementById("toastEliminarAreaError").style.display = 'block';
+    showToast("Error", "Ocurrió un error inesperado", true);
   }
 });
 

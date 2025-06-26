@@ -1,8 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-  // Toast initialization
-  const toastEl = document.getElementById('toast');
-  const toast = new bootstrap.Toast(toastEl, { autohide: true, delay: 5000 });
-  
+    
   // Obtener usuario desde localStorage
   const userFromStorage = localStorage.getItem('usuario');
 
@@ -60,9 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const saveBottomText = document.getElementById('save-bottom-text');
   const avatarUpload = document.getElementById('avatar-upload');
   const avatarImg = document.getElementById('avatar-img');
-  const avatarFallback = document.getElementById('avatar-fallback');
-  const toastTitle = document.getElementById('toast-title');
-  const toastBody = document.getElementById('toast-body');
+  const avatarFallback = document.getElementById('avatar-fallback');  
   const passwordChangeForm = document.getElementById('password-change-form');
   const twoFactorToggle = document.getElementById('two-factor-toggle');
 
@@ -111,42 +106,6 @@ document.addEventListener('DOMContentLoaded', function() {
       .join('')
       .toUpperCase()
       .slice(0, 2);
-  }
-  
-
-  // Show toast notification
-  let mouseX = 0;
-  let mouseY = 0;
-
-  // Captura la posición actual del mouse en todo momento
-  document.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-  });
-
-  function showToast(title, message, isError = false) {
-    toastTitle.textContent = title;
-    toastBody.textContent = message;
-
-    // Posición dinámica
-    toastEl.style.position = 'fixed';
-    toastEl.style.left = `${mouseX}px`;
-    toastEl.style.top = `${mouseY}px`;
-    toastEl.style.zIndex = 9999;
-
-    const header = toastEl.querySelector('.toast-header');
-
-    // Limpiar clases previas
-    header.classList.remove('bg-danger', 'bg-success', 'text-white');
-
-    // Estilo dinámico según tipo
-    if (isError) {
-      header.classList.add('bg-danger', 'text-white');
-    } else {
-      header.classList.add('bg-success', 'text-white');
-    }
-
-    toast.show();
   }
 
   // Check para los cambios en el perfil
@@ -315,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
 
-      showToast('Contraseña actualizada', 'Tu contraseña ha sido cambiada exitosamente.');
+      showToast('Contraseña actualizada', 'Tu contraseña ha sido actualizada exitosamente.');
       document.getElementById('password-change-form').reset();
     } catch (error) {
       console.error("Error en el cambio de contraseña:", error);

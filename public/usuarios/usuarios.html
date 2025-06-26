@@ -96,30 +96,8 @@
                             <select id="supervisor" class="form-select">
                               <option value="">Seleccione un supervisor</option>
                             </select>
-                          </div>
-
-                          <!-- Toast de error dentro del modal -->
-                          <div class="toast-container toast-center">
-                              <div id="toastPassword" class="toast align-items-center text-bg-danger border-0 show" role="alert" aria-live="assertive" aria-atomic="true" style="display: none;">
-                              <div class="d-flex">
-                                  <div class="toast-body">
-                                  La contraseña debe tener al menos 8 caracteres y coincidir con la confirmación.
-                                  </div>
-                                  <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="document.getElementById('toastPassword').style.display='none'" aria-label="Cerrar"></button>
-                              </div>
-                              </div>
-                          </div>
-                          <!-- Toast de éxito dentro del modal -->
-                          <div class="toast-container toast-center">
-                              <div id="toastExito" class="toast align-items-center text-bg-success border-0 show" role="alert" aria-live="assertive" aria-atomic="true" style="display: none;">
-                                  <div class="d-flex">
-                                  <div class="toast-body">
-                                      Usuario creado exitosamente.
-                                  </div>
-                                  <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="document.getElementById('toastExito').style.display='none'" aria-label="Cerrar"></button>
-                                  </div>
-                              </div>
-                          </div>
+                          </div>                         
+                          
                       </div>
                       <div class="modal-footer">
                           <button type="submit" class="btn btn-primary">Guardar</button>
@@ -171,31 +149,9 @@
               <div class="mb-3">
                 <label for="confirmarEditarPassword" class="form-label">Repetir Nueva Contraseña</label>
                 <input type="password" class="form-control" id="confirmarEditarPassword" minlength="8">
-              </div>
+              </div>        
 
-              <!-- Toast de error dentro del modal de edición -->
-              <div class="toast-container toast-center">
-                <div id="toastEditarError" class="toast align-items-center text-bg-danger border-0 show" role="alert" aria-live="assertive" aria-atomic="true" style="display: none;">
-                  <div class="d-flex">
-                    <div class="toast-body">
-                      No se pudo actualizar el usuario. Verifica los datos.
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="document.getElementById('toastEditarError').style.display='none'" aria-label="Cerrar"></button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Toast de éxito dentro del modal de edición -->
-              <div class="toast-container toast-center">
-                <div id="toastEditarExito" class="toast align-items-center text-bg-success border-0 show" role="alert" aria-live="assertive" aria-atomic="true" style="display: none;">
-                  <div class="d-flex">
-                    <div class="toast-body">
-                      Usuario actualizado correctamente.
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="document.getElementById('toastEditarExito').style.display='none'" aria-label="Cerrar"></button>
-                  </div>
-                </div>
-              </div>
+              
             </div>
             <div class="modal-footer">
               <button type="submit" class="btn btn-primary">Guardar Cambios</button>
@@ -221,31 +177,8 @@
               <div class="mb-3">
                 <label for="passwordEliminar" class="form-label">Ingresa tu contraseña para confirmar:</label>
                 <input type="password" class="form-control" id="passwordEliminar" required>
-              </div>
-
-              <!-- Toast de error -->
-              <div class="toast-container toast-center">
-                <div id="toastEliminarError" class="toast align-items-center text-bg-danger border-0 show" role="alert" style="display: none;">
-                  <div class="d-flex">
-                    <div class="toast-body">
-                      No se pudo eliminar el usuario. Verifica tu contraseña.
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="document.getElementById('toastEliminarError').style.display='none'" aria-label="Cerrar"></button>
-                  </div>
-                </div>
-              </div>        
-
-              <!-- Toast de éxito -->
-              <div class="toast-container toast-center">
-                <div id="toastEliminarExito" class="toast align-items-center text-bg-success border-0 show" role="alert" style="display: none;">
-                  <div class="d-flex">
-                    <div class="toast-body">
-                      Usuario eliminado correctamente.
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="document.getElementById('toastEliminarExito').style.display='none'" aria-label="Cerrar"></button>
-                  </div>
-                </div>
-              </div>
+              </div>                     
+            
             </div>
             <div class="modal-footer">
               <button type="submit" class="btn btn-danger">Eliminar</button>
@@ -254,7 +187,8 @@
           </form>
         </div>
       </div>
-    </div>
+    </div>    
+    <script src="/js/toast.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
       // Cargar el navbar desde archivo externo

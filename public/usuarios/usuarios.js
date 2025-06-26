@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const tablaUsuarios = document.getElementById("tablaUsuarios");
   const searchInput = document.getElementById("searchInput");
   const mensajeVacio = document.getElementById("mensajeVacio");
-  const toastEl = document.getElementById("toastPassword");
+ 
 
   function renderUsuarios(data) {
   const currentUser = JSON.parse(localStorage.getItem("usuario"));
@@ -92,21 +92,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const email = currentUser?.email;
 
     if (!password || !email) {
-        document.getElementById("toastEliminarError").style.display = 'block';
-        return;
+      showToast("Error", "Debes ingresar tu contraseña para confirmar.", true);
+      return;
     }
 
     try {
         // Paso 1: Validar credenciales
         const loginRes = await fetch("https://tickets.dev-wit.com/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
         });
 
         if (!loginRes.ok) {
-        document.getElementById("toastEliminarError").style.display = 'block';
-        return;
+          showToast("Error", "Contraseña incorrecta. Verifica tus credenciales.", true);
+          return;
         }
 
         // Paso 2: Proceder con eliminación
@@ -120,23 +120,21 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         if (!res.ok) {
-        document.getElementById("toastEliminarError").style.display = 'block';
-        return;
+          showToast("Error", "No se pudo eliminar el usuario. Verifica tu contraseña.", true);
+          return;
         }
-
-        document.getElementById("toastEliminarExito").style.display = 'block';
+        
         await cargarUsuariosDesdeAPI();
         searchInput.dispatchEvent(new Event("input"));
 
+        showToast("Éxito", "Usuario eliminado correctamente.");
         setTimeout(() => {
-        bootstrap.Modal.getInstance(document.getElementById("modalEliminarUsuario")).hide();
-        document.getElementById("toastEliminarExito").style.display = 'none';
+          bootstrap.Modal.getInstance(document.getElementById("modalEliminarUsuario")).hide();
         }, 1500);
 
     } catch (error) {
-        console.error("Error al eliminar usuario:", error);
-        document.getElementById("toastEliminarError").style.display = 'block';
-    }
+        console.error("Error al eliminar usuario:", error);        
+     }
     });  
 
     searchInput.addEventListener("input", () => {
@@ -164,7 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (password.length < 8 || password !== confirmarPassword) {
-      toastEl.style.display = 'block';
+      showToast("Error", "La contraseña debe tener al menos 8 caracteres y coincidir con la confirmación.", true);
       return;
     }
 
@@ -200,14 +198,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const creado = await res.json();
       await cargarUsuariosDesdeAPI();
-      searchInput.dispatchEvent(new Event("input"));
+      searchInput.dispatchEvent(new Event("input"));      
 
-      const toastExito = document.getElementById("toastExito");
-      toastExito.style.display = 'block';
-
+      showToast("Éxito", "Usuario creado exitosamente.");
       setTimeout(() => {
         bootstrap.Modal.getInstance(document.getElementById("modalUsuario")).hide();
-        toastExito.style.display = 'none';
         e.target.reset();
       }, 1500);
 
@@ -218,63 +213,62 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("formEditarUsuario").addEventListener("submit", async (e) => {
-    e.preventDefault();
+      e.preventDefault();
 
-    const id = document.getElementById("editarId").value;
-    const nombre = document.getElementById("editarNombre").value.trim();
-    const email = document.getElementById("editarEmail").value.trim();
-    const rol = document.getElementById("editarRol").value;
-    const password = document.getElementById("editarPassword").value.trim();
-    const confirmar = document.getElementById("confirmarEditarPassword").value.trim();
-    const supervisorId = document.getElementById("editarSupervisor").value;
+      const id = document.getElementById("editarId").value;
+      const nombre = document.getElementById("editarNombre").value.trim();
+      const email = document.getElementById("editarEmail").value.trim();
+      const rol = document.getElementById("editarRol").value;
+      const password = document.getElementById("editarPassword").value.trim();
+      const confirmar = document.getElementById("confirmarEditarPassword").value.trim();
+      const supervisorId = document.getElementById("editarSupervisor").value;
 
-    // Primero validar contraseña si se proporcionó
-    if (password) {
-      if (password.length < 8 || password !== confirmar) {
-        alert("La nueva contraseña debe tener al menos 8 caracteres y coincidir.");
-        return;
-      }
-    }
-
-    // Luego crear el objeto payload
-    const payload = { nombre, email, rol };
-    
-    // Agregar campos condicionales
-    if (password) payload.password = password;
-    if (supervisorId) payload.id_jefatura = parseInt(supervisorId);
-
-    try {
-      const res = await fetch(`https://tickets.dev-wit.com/api/users/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        document.getElementById("toastEditarError").style.display = 'block';
-        throw new Error(errorData?.message || `Error ${res.status}`);
+      // Validar contraseña solo si se proporcionó
+      if (password || confirmar) {
+          if (password.length < 8 || password !== confirmar) {
+              showToast("Error", "La nueva contraseña debe tener al menos 8 caracteres y coincidir.", true);
+              return;
+          }
       }
 
-      document.getElementById("toastEditarExito").style.display = 'block';
-      await cargarUsuariosDesdeAPI();
-      searchInput.dispatchEvent(new Event("input"));
+      // Luego crear el objeto payload
+      const payload = { nombre, email, rol };
+      
+      // Agregar campos condicionales
+      if (password) payload.password = password;
+      if (supervisorId) payload.id_jefatura = parseInt(supervisorId);
 
-      setTimeout(() => {
-        bootstrap.Modal.getInstance(document.getElementById("modalEditarUsuario")).hide();
-        document.getElementById("toastEditarExito").style.display = 'none';
-      }, 1500);
-    } catch (error) {
-      console.error("Error al actualizar usuario:", error);
-    }
+      try {
+          const res = await fetch(`https://tickets.dev-wit.com/api/users/${id}`, {
+              method: "PUT",
+              headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${token}`
+              },
+              body: JSON.stringify(payload)
+          });
+
+          if (!res.ok) {
+              const errorData = await res.json();        
+              throw new Error(errorData?.message || `Error ${res.status}`);
+          }
+          
+          await cargarUsuariosDesdeAPI();
+          searchInput.dispatchEvent(new Event("input"));
+
+          showToast("Éxito", "Usuario actualizado correctamente.");
+          setTimeout(() => {
+              bootstrap.Modal.getInstance(document.getElementById("modalEditarUsuario")).hide();
+          }, 1500);
+
+      } catch (error) {
+          console.error("Error al actualizar usuario:", error);
+          showToast("Error", "No se pudo actualizar el usuario. " + error.message, true);
+      }
   });
 
   async function cargarUsuariosDesdeAPI() {
-    if (!token) {
-      alert("No hay token. Debes iniciar sesión.");
+    if (!token) {      
       window.location.href = "index.html";
       return;
     }

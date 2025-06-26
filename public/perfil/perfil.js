@@ -14,7 +14,11 @@ document.addEventListener('DOMContentLoaded', function() {
       nombre: user.nombre,
       email: user.email,
       telefono: "",
-      cargo: user.rol === "admin" ? "Administrador del Sistema" : "Usuario",      
+      cargo: user.rol === "admin"
+        ? "Administrador del Sistema"
+        : user.rol === "jefatura"
+        ? "Supervisor"
+        : "Usuario",      
       ubicacion: "Chile",      
       fechaRegistro: "",
       ultimoAcceso: "",

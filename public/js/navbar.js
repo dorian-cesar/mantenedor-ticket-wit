@@ -28,7 +28,22 @@ function inicializarNavbar() {
   btnLogout.addEventListener("click", () => {
     localStorage.removeItem("token");
     localStorage.removeItem("usuario");
-    alert("Sesión cerrada exitosamente");
-    window.location.href = "/index.html";
+
+    Swal.fire({
+      title: "¡Sesión cerrada!",
+      text: "Has cerrado sesión correctamente.",
+      icon: "success",
+      timer: 1800,
+      timerProgressBar: true,
+      showConfirmButton: false,
+      background: "#f0f2f5",
+      color: "#333",
+      didOpen: () => {
+        Swal.showLoading();
+      },
+      willClose: () => {
+        window.location.href = "/index.html";
+      }
+    });
   });
 }

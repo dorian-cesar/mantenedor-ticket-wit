@@ -1,12 +1,3 @@
-yo como admin puedo crear usuarios con email y password, puedo reestablecer contraseñas de usuarios, 
-administrar usuarios de la plataforma de ticket, asignar roles a los usuarios, crear y administrar areas de trabajo (departamentos), 
-tambien puedo crear y actualizar estado de los ticket, 
-
-
-
-
-
-
 Tareas pendientes:
 
 Actualizar get al endpoint https://tickets.dev-wit.com/api/tickets, debería traer todos los campos del registro de la db

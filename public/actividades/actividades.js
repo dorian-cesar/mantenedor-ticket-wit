@@ -29,15 +29,17 @@ async function cargarActividadesDesdeAPI() {
 }
 
 function renderTabla(filtradas) {
-  tabla.innerHTML = ""
+  tabla.innerHTML = "";
   if (filtradas.length === 0) {
-    mensajeVacio.style.display = "block"
-    return
+    mensajeVacio.style.display = "block";
+    return;
   }
-  mensajeVacio.style.display = "none"
-  filtradas.forEach((actividad) => {
-    const tr = document.createElement("tr")
+  mensajeVacio.style.display = "none";
+
+  filtradas.forEach((actividad, index) => {
+    const tr = document.createElement("tr");
     tr.innerHTML = `
+      <td>${index + 1}</td>
       <td>${actividad.nombre}</td>
       <td class="text-muted">No disponible</td>
       <td class="text-muted">No disponible</td>
@@ -49,10 +51,11 @@ function renderTabla(filtradas) {
           <i class="bi bi-trash"></i>
         </button>
       </td>
-    `
-    tabla.appendChild(tr)
-  })
+    `;
+    tabla.appendChild(tr);
+  });
 }
+
 
 function filtrar() {
   const term = searchInput.value.toLowerCase()

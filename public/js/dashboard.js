@@ -1,18 +1,30 @@
+// Informar a la ventana origen que estás listo para recibir el token
+window.opener?.postMessage("READY_FOR_TOKEN", "https://mesa-de-ayuda.dev-wit.com");
+
+// Escuchar el mensaje con el token
 window.addEventListener("message", (event) => {
   if (
-    event.origin === "https://mesa-de-ayuda.dev-wit.com/views/options.html" && // Cambia al dominio que abre el mantenedor
+    event.origin === "https://mesa-de-ayuda.dev-wit.com" &&
     event.data?.type === "token"
   ) {
     localStorage.setItem("token", event.data.token);
     console.log("Token recibido y guardado en localStorage");
-    // Aquí puedes hacer cualquier inicialización que necesites
+
+    // Si quieres guardar más info (como en tu login)
+    // localStorage.setItem("usuario", JSON.stringify(event.data.user));
+
+    location.reload(); // Recargar la página con sesión activa
   }
 });
 
-const token = localStorage.getItem("token");
-if (!token) {
-  window.location.href = "./index.html";
-}
+// Si después de cierto tiempo no se recibe token, redirigir a login
+setTimeout(() => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = "./index.html";
+  }
+}, 1500);
+
 
 // Función para actualizar color del círculo según texto
 function actualizarEstadoSistema(texto, estado) {

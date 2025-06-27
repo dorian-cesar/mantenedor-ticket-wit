@@ -38,7 +38,7 @@ function renderTabla(filtradas) {
   filtradas.forEach((estado, index) => {
     const tr = document.createElement("tr")
     tr.innerHTML = `
-      <td>${index + 1}</td>
+      <td>${estado.id}</td>
       <td>${estado.nombre}</td>
       <td>${estado.descripcion || "Sin descripción"}</td>
       <td>${new Date(estado.fechaCreacion || Date.now()).toLocaleDateString("es-ES")}</td>

@@ -20,11 +20,18 @@
 
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Lista de Usuarios</h5>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalUsuario">
+      <h5 class="mb-0">Lista de Usuarios</h5>
+
+      <div class="d-flex gap-2 ms-auto">
+        <button class="btn btn-outline-secondary" id="btn-actualizar">
+          <i class="bi bi-arrow-clockwise me-1"></i>Actualizar
+        </button>
+        <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#modalUsuario">
           <i class="bi bi-plus me-2"></i>Nuevo Usuario
         </button>
       </div>
+    </div>
+
       <div class="card-body">
         <div class="mb-3 position-relative">
           <i class="bi bi-search position-absolute top-50 translate-middle-y ms-3"></i>

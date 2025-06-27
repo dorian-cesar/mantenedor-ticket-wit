@@ -53,8 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </td>
       `;
       tablaUsuarios.appendChild(fila);
-    });
-
+    });      
 
     document.querySelectorAll(".btn-editar").forEach(btn => {
       btn.addEventListener("click", async () => {
@@ -83,70 +82,95 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   }
+  // Botón actualizar
+  const btnActualizar = document.getElementById("btn-actualizar");
+  if (btnActualizar) {
+    btnActualizar.addEventListener("click", async () => {
+      const btn = btnActualizar;
+      const icono = btn.querySelector("i");
+      const textoOriginal = btn.innerHTML;
 
-    document.getElementById("formEliminarUsuario").addEventListener("submit", async (e) => {
-    e.preventDefault();
+      btn.disabled = true;
+      icono.classList.add("spinner-border", "spinner-border-sm");
+      icono.classList.remove("bi", "bi-arrow-clockwise");
+      btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Actualizando...`;
 
-    const id = parseInt(document.getElementById("eliminarId").value);
-    const password = document.getElementById("passwordEliminar").value.trim();
-    const currentUser = JSON.parse(localStorage.getItem("usuario"));
-    const email = currentUser?.email;
+      await cargarUsuariosDesdeAPI();
+      searchInput.dispatchEvent(new Event("input"));
 
-    if (!password || !email) {
-      showToast("Error", "Debes ingresar tu contraseña para confirmar.", true);
-      return;
-    }
+      showToast("Éxito", "Lista de usuarios actualizada.");
 
-    try {
-        // Paso 1: Validar credenciales
-        const loginRes = await fetch("https://tickets.dev-wit.com/api/auth/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password })
-        });
-
-        if (!loginRes.ok) {
-          showToast("Error", "Contraseña incorrecta.", true);
-          return;
-        }
-
-        // Paso 2: Proceder con eliminación
-        const res = await fetch(`https://tickets.dev-wit.com/api/users/${id}`, {
-        method: "DELETE",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ password })
-        });
-
-        if (!res.ok) {
-          showToast("Error", "No se pudo eliminar el usuario. Intenta nuevamente o contacta al administrador.", true);
-          return;
-        }
-        
-        await cargarUsuariosDesdeAPI();
-        searchInput.dispatchEvent(new Event("input"));
-
-        showToast("Éxito", "Usuario eliminado correctamente.");
-        setTimeout(() => {
-          bootstrap.Modal.getInstance(document.getElementById("modalEliminarUsuario")).hide();
-        }, 1500);
-
-    } catch (error) {
-        console.error("Error al eliminar usuario:", error);        
-     }
-    });  
-
-    searchInput.addEventListener("input", () => {
-      const term = searchInput.value.toLowerCase();
-      const filtrados = usuarios.filter(u =>
-        (u.nombre || "").toLowerCase().includes(term) ||
-        (u.email || "").toLowerCase().includes(term) ||
-        (u.rol || "").toLowerCase().includes(term)
-      );
-      renderUsuarios(filtrados);
+      setTimeout(() => {
+        btn.disabled = false;
+        icono.className = "bi bi-arrow-clockwise me-1";
+        btn.innerHTML = `<i class="bi bi-arrow-clockwise me-1"></i>Actualizar`;
+      }, 800);
     });
+  }
+
+  document.getElementById("formEliminarUsuario").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const id = parseInt(document.getElementById("eliminarId").value);
+  const password = document.getElementById("passwordEliminar").value.trim();
+  const currentUser = JSON.parse(localStorage.getItem("usuario"));
+  const email = currentUser?.email;
+
+  if (!password || !email) {
+    showToast("Error", "Debes ingresar tu contraseña para confirmar.", true);
+    return;
+  }
+
+  try {
+      // Paso 1: Validar credenciales
+      const loginRes = await fetch("https://tickets.dev-wit.com/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      if (!loginRes.ok) {
+        showToast("Error", "Contraseña incorrecta.", true);
+        return;
+      }
+
+      // Paso 2: Proceder con eliminación
+      const res = await fetch(`https://tickets.dev-wit.com/api/users/${id}`, {
+      method: "DELETE",
+      headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ password })
+      });
+
+      if (!res.ok) {
+        showToast("Error", "No se pudo eliminar el usuario. Intenta nuevamente o contacta al administrador.", true);
+        return;
+      }
+      
+      await cargarUsuariosDesdeAPI();
+      searchInput.dispatchEvent(new Event("input"));
+
+      showToast("Éxito", "Usuario eliminado correctamente.");
+      setTimeout(() => {
+        bootstrap.Modal.getInstance(document.getElementById("modalEliminarUsuario")).hide();
+      }, 1500);
+
+  } catch (error) {
+      console.error("Error al eliminar usuario:", error);        
+    }
+  });  
+
+  searchInput.addEventListener("input", () => {
+    const term = searchInput.value.toLowerCase();
+    const filtrados = usuarios.filter(u =>
+      (u.nombre || "").toLowerCase().includes(term) ||
+      (u.email || "").toLowerCase().includes(term) ||
+      (u.rol || "").toLowerCase().includes(term)
+    );
+    renderUsuarios(filtrados);
+  });
 
   document.getElementById("formUsuario").addEventListener("submit", async (e) => {
     e.preventDefault();

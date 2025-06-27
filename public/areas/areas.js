@@ -174,7 +174,7 @@ document.getElementById("formEliminarArea").addEventListener("submit", async (e)
       body: JSON.stringify({ password })
     });
 
-    showToast("Éxito", "Área eliminada correctamente", true); 
+    showToast("Éxito", "Área eliminada correctamente"); 
 
     if (!res.ok) {
       showToast("Error", "Hubo un problema al eliminar", true);

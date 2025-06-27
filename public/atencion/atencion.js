@@ -116,6 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
     modalServicio.show();
   });
 
+  // Formulario de creación atención
   document.getElementById("formServicio").addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -130,7 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const ejecutor_id = parseInt(document.getElementById("ejecutor_id").value);
 
     if (!nombre || isNaN(area_id) || isNaN(ejecutor_id)) {
-      mostrarToast("Todos los campos son obligatorios.", "danger");
+      showToast("Error", "Todos los campos son obligatorios.", true);
       submitBtn.disabled = false;
       submitBtn.innerHTML = originalBtnText;
       return;
@@ -155,7 +156,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (!res.ok) throw new Error("No se pudo guardar la atención");
 
-      mostrarToast("Atención guardada exitosamente", "success");
+      const mensaje = isEditing
+        ? "Atención editada exitosamente"
+        : "Atención creada exitosamente";
+
+      showToast("Éxito", mensaje);
+
       await cargarAtencionesDesdeAPI();
 
       setTimeout(() => {
@@ -165,8 +171,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 2000);
 
     } catch (err) {
-      console.error("Error al guardar atención:", err);
-      mostrarToast(err.message || "Ocurrió un error al guardar la atención.", "danger");
+      console.error("Error al guardar atención:", err);      
+      showToast("Error", err.message || "Ocurrió un error al guardar la atención.", true);
       submitBtn.disabled = false;
       submitBtn.innerHTML = originalBtnText;
     }
@@ -207,6 +213,7 @@ document.addEventListener("DOMContentLoaded", () => {
     modalEliminar.show();
   };
 
+  // Formulario de eliminar atención
   document.getElementById("formEliminarAtencion").addEventListener("submit", async (e) => {
     e.preventDefault()
     e.stopPropagation()
@@ -215,7 +222,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const usuario = JSON.parse(localStorage.getItem("usuario"))
 
     if (!usuario || !password) {
-      mostrarToast("Debe ingresar su contraseña para confirmar", "danger")
+      showToast("Error", "Debe ingresar su contraseña para confirmar", true);
       return
     }
 
@@ -235,6 +242,7 @@ document.addEventListener("DOMContentLoaded", () => {
       })
 
       if (!authResponse.ok) {
+        showToast("Error", "Contraseña incorrecta", true);
         throw new Error("Contraseña incorrecta")
       }
 
@@ -251,10 +259,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (!deleteResponse.ok) {
         const errorData = await deleteResponse.json()
-        throw new Error(errorData.message || "Error al eliminar la atención")
+        showToast("Error", "Hubo un error al eliminar la atención", true);
+        throw new Error(errorData.message || "Hubo un error al eliminar la atención")
       }
 
-      mostrarToast("Atención eliminada correctamente", "success")
+      showToast("Éxito", "Atención eliminada correctamente");
       await cargarAtencionesDesdeAPI()
 
       // mantener desactivado el botón hasta cerrar el modal
@@ -265,8 +274,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 2000)
 
     } catch (error) {
-      console.error("Error en eliminación:", error)
-      mostrarToast(error.message, "danger")
+      console.error("Error en eliminación:", error)      
       confirmBtn.disabled = false
       confirmBtn.innerHTML = originalText
     }
@@ -276,74 +284,4 @@ document.addEventListener("DOMContentLoaded", () => {
   searchInput.addEventListener("input", filtrar);
   cargarAtencionesDesdeAPI();
 
-  // Función para mostrar toasts
-  function mostrarToast(mensaje, tipo = "success") {
-    const toastId = `toast-${tipo}`
-    let toastEl = document.getElementById(toastId)
-    if (!toastEl) {
-      toastEl = document.createElement("div")
-      toastEl.id = toastId
-      toastEl.className = `toast align-items-center text-bg-${tipo} border-0 show position-absolute top-50 start-50 translate-middle`
-      toastEl.role = "alert"
-      toastEl.style.zIndex = 1060 // encima del modal
-      toastEl.innerHTML = `
-        <div class="d-flex">
-          <div class="toast-body">${mensaje}</div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto" aria-label="Cerrar"></button>
-        </div>`
-      
-      const modalBody = document.querySelector(".modal.show .modal-body") || document.body
-      modalBody.appendChild(toastEl)
-
-      toastEl.querySelector(".btn-close").addEventListener("click", () => toastEl.remove())
-    } else {
-      toastEl.querySelector(".toast-body").textContent = mensaje
-      toastEl.style.display = "block"
-    }
-
-    setTimeout(() => {
-      toastEl.remove()
-    }, 3500)
-  } 
 });
-
-
-
-// // Mostrar toast
-function mostrarToast(mensaje, tipo = "success") {
-  const toastId = `toast-${tipo}`
-  let toastEl = document.getElementById(toastId)
-  if (!toastEl) {
-    toastEl = document.createElement("div")
-    toastEl.id = toastId
-    toastEl.className = `toast align-items-center text-bg-${tipo} border-0 show position-absolute top-50 start-50 translate-middle`
-    toastEl.role = "alert"
-    toastEl.style.zIndex = 1060 // encima del modal
-    toastEl.innerHTML = `
-      <div class="d-flex">
-        <div class="toast-body">${mensaje}</div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" aria-label="Cerrar"></button>
-      </div>`
-    
-    const modalBody = document.querySelector(".modal.show .modal-body") || document.body
-    modalBody.appendChild(toastEl)
-
-    toastEl.querySelector(".btn-close").addEventListener("click", () => toastEl.remove())
-  } else {
-    toastEl.querySelector(".toast-body").textContent = mensaje
-    toastEl.style.display = "block"
-  }
-
-  setTimeout(() => {
-    toastEl.remove()
-  }, 3500)
-}
-
-
-// --- en submit POST/PUT --- reemplazar alert con:
-// mostrarToast("Atención guardada exitosamente", "success")
-// mostrarToast("Error al guardar atención", "danger")
-
-// --- en eliminar ---
-// mostrarToast("Atención eliminada correctamente", "success")
-// mostrarToast("Error al eliminar atención", "danger")

@@ -36,7 +36,6 @@ async function cargarTicketsDesdeAPI() {
   filtrarTickets();
 }
 
-
 // Asegurar que se actualice la paginación al cambiar de pestaña
 document.querySelectorAll('#statusTabs .nav-link').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -75,7 +74,6 @@ function filtrarTickets() {
   renderizarTickets();
   actualizarPaginacion();
 }
-
 
 // Función para renderizar tickets
 function renderizarTickets() {

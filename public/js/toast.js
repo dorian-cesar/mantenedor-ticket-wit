@@ -3,7 +3,7 @@
  * =========================================
  * 
  * Este módulo proporciona un sistema de notificaciones toast personalizable que:
- * - Se posiciona dinámicamente cerca del cursor del mouse
+ * - Se posiciona en la parte superior derecha de la pantalla
  * - Soporta mensajes de éxito y error
  * - Se crea automáticamente si no existe en el DOM
  * - Es fácil de usar desde cualquier parte de la aplicación
@@ -16,54 +16,42 @@
  * 
  * Características:
  * ----------------
- * - Posición dinámica: aparece cerca de donde está el cursor
- * - Autocierre: se oculta automáticamente después de 5 segundos
+ * - Posicionamiento fijo en pantalla: aparecen en el lado superior derecho
+ * - Apilamiento: los nuevos toasts se agregan debajo del anterior
+ * - Autocierre: se ocultan automáticamente después de 5 segundos
  * - Diseño responsivo: se adapta a diferentes tamaños de pantalla
  * - Sin dependencias externas: solo requiere Bootstrap 5
  * 
  * Personalización:
  * ----------------
- * - Para cambiar el tiempo de visualización: modificar el 'delay' en initToastElements()
+ * - Para cambiar el tiempo de visualización: modificar el 'delay' en showToast()
  * - Para cambiar los colores: modificar las clases bg-danger/bg-success en showToast()
- * - Para cambiar la posición relativa al cursor: modificar los valores +20 en showToast()
+ * - Para cambiar la posición de los toasts: ajustar el estilo del contenedor en initToastContainer()
  */
 
-let toastEl, toast, toastTitle, toastBody;
-
-// Posición del mouse - seguimiento para posicionamiento dinámico
-let mouseX = 0;
-let mouseY = 0;
-
-// Registrar movimiento del mouse para posicionar los toasts
-document.addEventListener('mousemove', (e) => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
-});
+let toastContainer; // Contenedor de toasts
 
 /**
- * Inicializa los elementos del toast si no existen
- * Crea la estructura HTML del toast y configura la instancia de Bootstrap
+ * Inicializa el contenedor de toasts si no existe
+ * Crea el contenedor HTML donde se apilarán los toasts
  */
-function initToastElements() {
-  // Crear el toast dinámicamente si no existe
-  if (!document.getElementById('toast')) {
-    const toastHTML = `
-    <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="toast-header">
-        <strong id="toast-title" class="me-auto"></strong>
-        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-      </div>
-      <div id="toast-body" class="toast-body"></div>
-    </div>
+function initToastContainer() {
+  if (!document.getElementById('toast-container')) {
+    const containerHTML = `
+      <div id="toast-container" style="
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-width: 550px;
+      "></div>
     `;
-    document.body.insertAdjacentHTML('beforeend', toastHTML);
+    document.body.insertAdjacentHTML('beforeend', containerHTML);
   }
-
-  // Configurar elementos y instancia de toast
-  toastEl = document.getElementById('toast');
-  toast = new bootstrap.Toast(toastEl, { autohide: true, delay: 5000 });
-  toastTitle = document.getElementById('toast-title');
-  toastBody = document.getElementById('toast-body');
+  toastContainer = document.getElementById('toast-container');
 }
 
 /**
@@ -72,31 +60,33 @@ function initToastElements() {
  * @param {string} message - Mensaje a mostrar
  * @param {boolean} [isError=false] - Si es true, muestra un toast de error (rojo), sino de éxito (verde)
  */
-
 function showToast(title, message, isError = false) {
-  // Asegurarse que los elementos del toast estén inicializados
-  if (!toastEl || !toastTitle || !toastBody) initToastElements();
+  // Asegurarse que el contenedor esté inicializado
+  if (!toastContainer) initToastContainer();
 
-  // Establecer contenido
-  toastTitle.textContent = title;
-  toastBody.textContent = message;
+  // Crear un ID único para el toast
+  const id = `toast-${Date.now()}`;
 
-  // Posicionamiento dinámico cerca del cursor (20px de desplazamiento)
-  toastEl.style.position = 'fixed';
-  toastEl.style.left = `${mouseX + 20}px`;
-  toastEl.style.top = `${mouseY + 20}px`;
-  toastEl.style.zIndex = '9999';
+  // HTML del toast individual
+  const toastHTML = `
+    <div id="${id}" class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+      <div class="toast-header ${isError ? 'bg-danger text-white' : 'bg-success text-white'}">
+        <strong class="me-auto">${title}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">${message}</div>
+    </div>
+  `;
 
-  // Configurar estilo según tipo (éxito/error)
-  const header = toastEl.querySelector('.toast-header');
-  header.classList.remove('bg-danger', 'bg-success', 'text-white');
+  // Insertar el nuevo toast al final del contenedor (apilamiento vertical)
+  toastContainer.insertAdjacentHTML('beforeend', toastHTML);
 
-  if (isError) {
-    header.classList.add('bg-danger', 'text-white');  // Estilo para errores
-  } else {
-    header.classList.add('bg-success', 'text-white'); // Estilo para éxitos
-  }
-
-  // Mostrar el toast
+  const toastEl = document.getElementById(id);
+  const toast = new bootstrap.Toast(toastEl, { autohide: true, delay: 5000 });
   toast.show();
+
+  // Eliminar del DOM cuando desaparezca
+  toastEl.addEventListener('hidden.bs.toast', () => {
+    toastEl.remove();
+  });
 }

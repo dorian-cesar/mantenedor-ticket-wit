@@ -84,6 +84,7 @@ document.getElementById("formActividad").addEventListener("submit", async (e) =>
         },
         body: JSON.stringify({ nombre }),
       })
+      showToast("Éxito", "Actividad editada correctamente"); 
 
       if (!res.ok) throw new Error("Error al actualizar la actividad")
 
@@ -97,6 +98,7 @@ document.getElementById("formActividad").addEventListener("submit", async (e) =>
         },
         body: JSON.stringify({ nombre }),
       })
+      showToast("Éxito", "Actividad creada correctamente"); 
 
       if (!res.ok) throw new Error("Error al crear la actividad")
 
@@ -148,7 +150,7 @@ document.getElementById("formEliminarActividad").addEventListener("submit", asyn
     })
 
     if (!loginRes.ok) {
-      document.getElementById("toastEliminarActividadError").style.display = 'block'
+      showToast("Error", "Contraseña incorrecta", true); 
       return
     }
 
@@ -160,9 +162,10 @@ document.getElementById("formEliminarActividad").addEventListener("submit", asyn
       },
       body: JSON.stringify({ password })
     })
+    showToast("Éxito", "Actividad eliminada correctamente");
 
     if (!res.ok) {
-      document.getElementById("toastEliminarActividadError").style.display = 'block'
+      showToast("Error", "Hubo un problema al eliminar", true);
       return
     }
 

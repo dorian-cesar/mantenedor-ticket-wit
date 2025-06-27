@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         if (!loginRes.ok) {
-          showToast("Error", "Contraseña incorrecta. Verifica tus credenciales.", true);
+          showToast("Error", "Contraseña incorrecta.", true);
           return;
         }
 
@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         if (!res.ok) {
-          showToast("Error", "No se pudo eliminar el usuario. Verifica tu contraseña.", true);
+          showToast("Error", "No se pudo eliminar el usuario. Intenta nuevamente o contacta al administrador.", true);
           return;
         }
         

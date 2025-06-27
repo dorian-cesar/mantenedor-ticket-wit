@@ -1,3 +1,14 @@
+window.addEventListener("message", (event) => {
+  if (
+    event.origin === "https://mesa-de-ayuda.dev-wit.com/views/options.html" && // Cambia al dominio que abre el mantenedor
+    event.data?.type === "token"
+  ) {
+    localStorage.setItem("token", event.data.token);
+    console.log("Token recibido y guardado en localStorage");
+    // Aquí puedes hacer cualquier inicialización que necesites
+  }
+});
+
 const token = localStorage.getItem("token");
 if (!token) {
   window.location.href = "./index.html";

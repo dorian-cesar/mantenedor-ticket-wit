@@ -75,7 +75,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function cargarSelectsDinamicos() {
-    try {
+    try {     
+
       // Cargar áreas
       const resAreas = await fetch("https://tickets.dev-wit.com/api/areas", {
         headers: { Authorization: `Bearer ${token}` }
@@ -104,6 +105,20 @@ document.addEventListener("DOMContentLoaded", () => {
         selectEjecutor.appendChild(option);
       });
 
+      // Cargar categorías
+      const resCategorias = await fetch("https://tickets.dev-wit.com/api/categorias", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const categorias = await resCategorias.json();
+      const selectCategoria = document.getElementById("categoria_id");
+      selectCategoria.innerHTML = '<option value="">Seleccione una categoría</option>';
+      categorias.forEach(categoria => {
+        const option = document.createElement("option");
+        option.value = categoria.id;
+        option.textContent = categoria.nombre;
+        selectCategoria.appendChild(option);
+      });
+
     } catch (err) {
       console.error("Error al cargar selects dinámicos:", err);
     }
@@ -129,6 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
     submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Guardando...`;
 
     const nombre = document.getElementById("nombre").value.trim();
+    const categoria_id = parseInt(document.getElementById("categoria_id").value);
     const area_id = parseInt(document.getElementById("area_id").value);
     const ejecutor_id = parseInt(document.getElementById("ejecutor_id").value);
 
@@ -153,7 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ nombre, area_id, ejecutor_id })
+        body: JSON.stringify({ nombre, categoria_id, area_id, ejecutor_id })
       });
 
       if (!res.ok) throw new Error("No se pudo guardar la atención");
@@ -196,6 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("nombre").value = atencion.nombre;
 
     cargarSelectsDinamicos().then(() => {
+      document.getElementById("categoria_id").value = atencion.categoria_id;
       document.getElementById("area_id").value = atencion.area_id;
       document.getElementById("ejecutor_id").value = atencion.ejecutor_id;
       modalServicio.show();

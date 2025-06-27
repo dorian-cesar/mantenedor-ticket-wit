@@ -1,9 +1,13 @@
 Tareas pendientes:
 
-Actualizar get al endpoint https://tickets.dev-wit.com/api/tickets, debería traer todos los campos del registro de la db
+api/categorias
 
 
-Incorporar historial del ticket
+
+
+
+
+Incorporar historial del ticket?
 
 Actualizar GET /api/tickets para aceptar dos parámetros query page → número de página limit → cuántos registros traer (por ejemplo, 15), para poder limitar los registros obtenidos
 

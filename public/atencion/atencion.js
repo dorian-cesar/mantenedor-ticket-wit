@@ -32,6 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
       tr.innerHTML = `
         <td>${srv.id}</td>
         <td>${srv.nombre}</td>
+        <td>${srv.categoria}</td>
         <td>${srv.area_nombre}</td>
         <td>${srv.ejecutor_nombre}</td>
         <td>
@@ -47,6 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const term = searchInput.value.toLowerCase();
     const resultado = atenciones.filter((s) =>
       s.nombre.toLowerCase().includes(term) ||
+      s.categoria.toLowerCase().includes(term) ||
       s.area_nombre.toLowerCase().includes(term) ||
       s.ejecutor_nombre.toLowerCase().includes(term)
     );

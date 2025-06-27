@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const fila = document.createElement("tr");
       fila.innerHTML = `
+        <td>${usuario.id}</td>
         <td>${usuario.nombre}</td>
         <td>${usuario.email}</td>
         <td><span class="badge ${getRolBadgeClass(usuario.rol)}">${usuario.rol || 'Sin rol'}</span></td>

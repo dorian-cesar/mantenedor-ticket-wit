@@ -18,10 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
         : "Usuario",      
       ubicacion: "Chile",      
       fechaRegistro: "",
-      ultimoAcceso: "",
-      timezone: "America/Santiago",
-      idioma: "es",
-      formatoFecha: "DD/MM/YYYY",
+      ultimoAcceso: "",      
       tema: "light",
       notificacionesEmail: true,
       notificacionesPush: true,
@@ -29,8 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
       frecuenciaNotificaciones: "immediate",
       notificarTicketsAsignados: true,
       notificarTicketsVencidos: true,
-      notificarMenciones: true,
-      twoFactorEnabled: false,
+      notificarMenciones: true,      
       ultimoCambioPassword: "",
       sesionesActivas: 1,
       ticketsCreados: 0,
@@ -58,8 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const avatarUpload = document.getElementById('avatar-upload');
   const avatarImg = document.getElementById('avatar-img');
   const avatarFallback = document.getElementById('avatar-fallback');  
-  const passwordChangeForm = document.getElementById('password-change-form');
-  const twoFactorToggle = document.getElementById('two-factor-toggle');
+  const passwordChangeForm = document.getElementById('password-change-form');  
 
   // Initialize form fields
   function initializeForm() {
@@ -70,10 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('cargo').value = profile.cargo;    
     document.getElementById('ubicacion').value = profile.ubicacion;    
     
-    // Preferences
-    document.getElementById('timezone').value = profile.timezone;
-    document.getElementById('idioma').value = profile.idioma;
-    document.getElementById('formatoFecha').value = profile.formatoFecha;
+    // Preferences    
     document.getElementById('tema').value = profile.tema;
     
     // Notifications
@@ -83,10 +75,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('frecuenciaNotificaciones').value = profile.frecuenciaNotificaciones;
     document.getElementById('notificarTicketsAsignados').checked = profile.notificarTicketsAsignados;
     document.getElementById('notificarTicketsVencidos').checked = profile.notificarTicketsVencidos;
-    document.getElementById('notificarMenciones').checked = profile.notificarMenciones;
+    document.getElementById('notificarMenciones').checked = profile.notificarMenciones;    
     
-    // Security
-    twoFactorToggle.checked = profile.twoFactorEnabled;
     
     // Profile header
     document.getElementById('profile-name').textContent = profile.nombre;
@@ -115,10 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
       email: document.getElementById('email').value,
       telefono: document.getElementById('telefono').value,
       cargo: document.getElementById('cargo').value,      
-      ubicacion: document.getElementById('ubicacion').value,      
-      timezone: document.getElementById('timezone').value,
-      idioma: document.getElementById('idioma').value,
-      formatoFecha: document.getElementById('formatoFecha').value,
+      ubicacion: document.getElementById('ubicacion').value,  
       tema: document.getElementById('tema').value,
       notificacionesEmail: document.getElementById('notificacionesEmail').checked,
       notificacionesPush: document.getElementById('notificacionesPush').checked,
@@ -126,8 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
       frecuenciaNotificaciones: document.getElementById('frecuenciaNotificaciones').value,
       notificarTicketsAsignados: document.getElementById('notificarTicketsAsignados').checked,
       notificarTicketsVencidos: document.getElementById('notificarTicketsVencidos').checked,
-      notificarMenciones: document.getElementById('notificarMenciones').checked,
-      twoFactorEnabled: twoFactorToggle.checked
+      notificarMenciones: document.getElementById('notificarMenciones').checked,      
     };
 
     hasChanges = JSON.stringify(currentValues) !== JSON.stringify(originalProfile);
@@ -168,10 +154,7 @@ document.addEventListener('DOMContentLoaded', function() {
         email: document.getElementById('email').value,
         telefono: document.getElementById('telefono').value,
         cargo: document.getElementById('cargo').value,        
-        ubicacion: document.getElementById('ubicacion').value,        
-        timezone: document.getElementById('timezone').value,
-        idioma: document.getElementById('idioma').value,
-        formatoFecha: document.getElementById('formatoFecha').value,
+        ubicacion: document.getElementById('ubicacion').value, 
         tema: document.getElementById('tema').value,
         notificacionesEmail: document.getElementById('notificacionesEmail').checked,
         notificacionesPush: document.getElementById('notificacionesPush').checked,
@@ -179,8 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
         frecuenciaNotificaciones: document.getElementById('frecuenciaNotificaciones').value,
         notificarTicketsAsignados: document.getElementById('notificarTicketsAsignados').checked,
         notificarTicketsVencidos: document.getElementById('notificarTicketsVencidos').checked,
-        notificarMenciones: document.getElementById('notificarMenciones').checked,
-        twoFactorEnabled: twoFactorToggle.checked
+        notificarMenciones: document.getElementById('notificarMenciones').checked,        
       };
       
       originalProfile = JSON.parse(JSON.stringify(profile));
@@ -309,13 +291,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Password change form
     if (passwordChangeForm) {
       passwordChangeForm.addEventListener('submit', handlePasswordChange);
-    }
+    }   
     
-    // Two factor toggle
-    twoFactorToggle.addEventListener('change', function() {
-      profile.twoFactorEnabled = this.checked;
-      checkForChanges();
-    });
   }
 
   // Initialize the page

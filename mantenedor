@@ -3,69 +3,7 @@ administrar usuarios de la plataforma de ticket, asignar roles a los usuarios, c
 tambien puedo crear y actualizar estado de los ticket, 
 
 
-Estoy desarrollando el frontend de un sistema de tickets. Actúo como administrador (rol mantenedor) y necesito implementar una interfaz que me permita realizar las siguientes tareas clave, conectándome a un backend ya funcional vía API. Las acciones deben ser intuitivas, con validaciones y retroalimentación clara para el usuario. Aquí está el detalle de cada módulo:
 
-🧑‍💼 Gestión de Usuarios
-
-los roles de usuario son:
-  ejecutor
-  solicitante
-  admin
-
-Objetivo: Crear, listar, editar, eliminar usuarios y asignarles roles.
-
-GET /api/users para listar todos los usuarios.
-
-Campos: id, nombre, email, rol
-
-Formulario de creación:
-
-Campos: nombre, email, contraseña, rol
-
-Validaciones: email único, contraseña mínima segura
-
-Opciones por usuario:
-
-Editar rol
-
-Resetear contraseña
-
-Eliminar usuario
-
-🏢 Gestión de Áreas de Trabajo (Departamentos)
-Objetivo: Administrar las áreas que se asignan a tickets.
-
-GET /api/areas para listar áreas
-
-Funcionalidades:
-
-Crear nueva área (nombre)
-
-Editar nombre del área
-
-Eliminar área (con confirmación de seguridad)
-
-🛠️ Gestión de Tipos de Atención (Servicios)
-Objetivo: Administrar categorías o servicios disponibles al crear un ticket.
-
-Funcionalidades:
-
-Listar tipos de atención
-
-Crear nuevo tipo
-
-Editar o eliminar tipos existentes
-
-🧾 Gestión de Estados de Ticket
-Objetivo: Crear y modificar los estados que un ticket puede tener (Ej: abierto, en proceso, cerrado).
-
-Funcionalidades:
-
-Listar estados
-
-Crear nuevo estado
-
-Editar/eliminar estados
 
 
 
@@ -73,9 +11,8 @@ Tareas pendientes:
 
 Actualizar get al endpoint https://tickets.dev-wit.com/api/tickets, debería traer todos los campos del registro de la db
 
-Incorporar historial del ticket
 
-Actualizar put al endpoint https://tickets.dev-wit.com/api/users/ debe permitir agregar id_jefatura al editar usuario
+Incorporar historial del ticket
 
 Actualizar GET /api/tickets para aceptar dos parámetros query page → número de página limit → cuántos registros traer (por ejemplo, 15), para poder limitar los registros obtenidos
 

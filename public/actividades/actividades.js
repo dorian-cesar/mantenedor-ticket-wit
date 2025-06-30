@@ -187,27 +187,27 @@ window.onload = () => {
 }
 
 // Botón actualizar
-  const btnActualizar = document.getElementById("btn-actualizar");
-  if (btnActualizar) {
-    btnActualizar.addEventListener("click", async () => {
-      const btn = btnActualizar;
-      const icono = btn.querySelector("i");
-      const textoOriginal = btn.innerHTML;
+const btnActualizar = document.getElementById("btn-actualizar");
+if (btnActualizar) {
+  btnActualizar.addEventListener("click", async () => {
+    const btn = btnActualizar;
+    const icono = btn.querySelector("i");
+    const textoOriginal = btn.innerHTML;
 
-      btn.disabled = true;
-      icono.classList.add("spinner-border", "spinner-border-sm");
-      icono.classList.remove("bi", "bi-arrow-clockwise");
-      btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Actualizando...`;
+    btn.disabled = true;
+    icono.classList.add("spinner-border", "spinner-border-sm");
+    icono.classList.remove("bi", "bi-arrow-clockwise");
+    btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Actualizando...`;
 
-      await cargarActividadesDesdeAPI();
-      searchInput.dispatchEvent(new Event("input"));
+    await cargarActividadesDesdeAPI();
+    searchInput.dispatchEvent(new Event("input"));
 
-      showToast("Éxito", "Lista de actividades actualizada.");
+    showToast("Éxito", "Lista de actividades actualizada.");
 
-      setTimeout(() => {
-        btn.disabled = false;
-        icono.className = "bi bi-arrow-clockwise me-1";
-        btn.innerHTML = `<i class="bi bi-arrow-clockwise me-1"></i>Actualizar`;
-      }, 800);
-    });
-  }
+    setTimeout(() => {
+      btn.disabled = false;
+      icono.className = "bi bi-arrow-clockwise me-1";
+      btn.innerHTML = `<i class="bi bi-arrow-clockwise me-1"></i>Actualizar`;
+    }, 800);
+  });
+}

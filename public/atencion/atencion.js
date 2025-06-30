@@ -163,16 +163,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const method = isEditing ? "PUT" : "POST";
 
     try {
+      console.log("Datos a enviar:", { nombre, area_id, ejecutor_id, categoria_id });
       const res = await fetch(url, {
         method,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ nombre, categoria_id, area_id, ejecutor_id })
+        body: JSON.stringify({ nombre, area_id, ejecutor_id, categoria_id })
       });
 
-      if (!res.ok) throw new Error("No se pudo guardar la atención");
+      // if (!res.ok) throw new Error("No se pudo guardar la atención");
+      if (!res.ok) {
+        const texto = await res.text(); // 👈 NUEVO
+        console.error("Respuesta completa del backend:", texto);
+        throw new Error("No se pudo guardar la atención");
+      }
+      
 
       const mensaje = isEditing
         ? "Atención editada exitosamente"
@@ -210,6 +217,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("modalServicioLabel").textContent = "Editar Atención";
     document.getElementById("servicioId").value = atencion.id;
     document.getElementById("nombre").value = atencion.nombre;
+    document.getElementById("categoria_id").value = "";
 
     cargarSelectsDinamicos().then(() => {
       document.getElementById("categoria_id").value = atencion.categoria_id;

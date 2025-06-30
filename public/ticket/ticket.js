@@ -57,8 +57,8 @@ function filtrarTickets() {
   const termino = searchInput.value.toLowerCase().trim();
 
   const origen = termino === ""
-    ? tickets // solo los 200 más recientes
-    : todosLosTickets; // todos los registros si hay búsqueda
+    ? tickets 
+    : todosLosTickets; 
 
   ticketsFiltrados = origen.filter(ticket => 
     (ticket.id.toString().includes(termino)) ||
@@ -172,7 +172,7 @@ function actualizarPaginacion() {
   paginacionControl.appendChild(liSiguiente);
 }
 
-// Función para mostrar detalles del ticket (sin cambios)
+// Función para mostrar detalles del ticket
 function mostrarDetallesTicket(ticket) {
   document.getElementById('modalTicketId').textContent = ticket.id;
   document.getElementById('modalSolicitante').textContent = ticket.solicitante || '-';

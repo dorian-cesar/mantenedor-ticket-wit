@@ -1,12 +1,13 @@
 // Paso 1: Avisar que estamos listos para recibir el token si venimos redirigidos
-window.opener?.postMessage("READY_FOR_TOKEN", "https://ticket-wit.netlify.app");
+window.opener?.postMessage("READY_FOR_TOKEN", "*"); // Permitimos todos los orígenes al enviar, se valida al recibir
 
 // Paso 2: Escuchar token enviado desde la página origen
 window.addEventListener("message", (event) => {
-  if (
-    event.origin === "https://ticket-wit.netlify.app" &&
-    event.data?.type === "token"
-  ) {
+  const origenValido =
+    event.origin === "https://ticket-wit.netlify.app" ||
+    event.origin === "https://mesadeayuda.pullman.cl";
+
+  if (origenValido && event.data?.type === "token") {
     localStorage.setItem("token", event.data.token);
     localStorage.setItem("usuario", JSON.stringify(event.data.usuario));
     console.log("Token y usuario recibidos vía postMessage");
@@ -15,7 +16,6 @@ window.addEventListener("message", (event) => {
 });
 
 // Paso 3: Ejecutar lógica solo si hay token válido
-
 document.addEventListener("DOMContentLoaded", () => {
   const token = localStorage.getItem("token");
   if (!token) {
@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   iniciarDashboardConToken(token);
 });
+
 
 // Paso 4: Función principal del dashboard
 function iniciarDashboardConToken(token) {

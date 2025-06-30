@@ -172,10 +172,9 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         body: JSON.stringify({ nombre, area_id, ejecutor_id, categoria_id })
       });
-
-      // if (!res.ok) throw new Error("No se pudo guardar la atención");
+      
       if (!res.ok) {
-        const texto = await res.text(); // 👈 NUEVO
+        const texto = await res.text(); 
         console.error("Respuesta completa del backend:", texto);
         throw new Error("No se pudo guardar la atención");
       }

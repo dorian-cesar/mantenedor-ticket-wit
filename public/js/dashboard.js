@@ -8,7 +8,8 @@ window.addEventListener("message", (event) => {
     event.data?.type === "token"
   ) {
     localStorage.setItem("token", event.data.token);
-    console.log("Token recibido vía postMessage");
+    localStorage.setItem("usuario", JSON.stringify(event.data.usuario));
+    console.log("Token y usuario recibidos vía postMessage");
     location.reload(); // Recargar para que se inicie el dashboard normalmente
   }
 });

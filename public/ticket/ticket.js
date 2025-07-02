@@ -128,10 +128,13 @@ function renderizarTickets() {
         </div>
       </td>
       <td>
-        <button class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-pencil"></i> Editar</button>
-        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Eliminar</button>
-      </td>`;
-
+        <button class="btn btn-sm btn-outline-primary me-2" onclick="editarEstado">
+          <i class="bi bi-pencil"></i>
+        </button>
+        <button class="btn btn-sm btn-outline-danger" onclick="eliminarEstado">
+          <i class="bi bi-trash"></i>
+        </button>
+      </td>`
     row.querySelector(".view-details").addEventListener("click", () => mostrarDetallesTicket(ticket));
     tabla.appendChild(row);
   });
@@ -213,7 +216,7 @@ function getBadgeClass(estado) {
   const normalized = estado.trim().toLowerCase();
   if (normalized === "pendiente pa") return "badge-estado-pendientepa";
   if (normalized === "asignado") return "badge-estado-asignado";
-  if (normalized === "en ejecución") return "badge-estado-ejecucion";
+  if (normalized === "en ejecución") return "badge-estado-enejecucion";
   if (normalized === "pendiente pp") return "badge-estado-pendientepp";
   if (normalized === "cancelado") return "badge-estado-cancelado";
   if (normalized === "listo") return "badge-estado-listo";  

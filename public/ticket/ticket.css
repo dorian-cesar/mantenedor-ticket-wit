@@ -8,18 +8,18 @@
   color: #fff;
 }
 
-.badge-estado-ejecucion {
-  background-color: #3498db !important;
+.badge-estado-enejecucion {
+  background-color: #2980b9 !important;
   color: #fff;
 }
 
 .badge-estado-pendientepp {
-  background-color: #f35212 !important;
+  background-color: #ff9f43 !important;
   color: #000;
 }
 
 .badge-estado-cancelado {
-  background-color: #e74c3c !important;
+  background-color: #746b6a !important;
   color: #fff;
 }
 

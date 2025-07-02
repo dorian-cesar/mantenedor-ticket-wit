@@ -35,13 +35,13 @@ function renderTabla(filtradas) {
     return
   }
   mensajeVacio.style.display = "none"
-  filtradas.forEach((estado, index) => {
+  filtradas.forEach((estado) => {
     const tr = document.createElement("tr")
+    const badgeClass = getBadgeClass(estado.nombre);
     tr.innerHTML = `
       <td>${estado.id}</td>
       <td>${estado.nombre}</td>
-      <td>${estado.descripcion || "Sin descripción"}</td>
-      <td>${new Date(estado.fechaCreacion || Date.now()).toLocaleDateString("es-ES")}</td>
+      <td><span class="badge ${badgeClass}">${estado.nombre}</span></td>
       <td>
         <button class="btn btn-sm btn-outline-primary me-2" onclick="editarEstado(${estado.id})">
           <i class="bi bi-pencil"></i>
@@ -54,6 +54,16 @@ function renderTabla(filtradas) {
     tabla.appendChild(tr)
   })
 }
+
+function getBadgeClass(nombre) {
+  const n = nombre
+    .normalize("NFD")               // descompone letras acentuadas
+    .replace(/[\u0300-\u036f]/g, "") // elimina los acentos
+    .toLowerCase()
+    .replace(/\s+/g, "");
+  return `badge-estado-${n}`;
+}
+
 
 function filtrar() {
   const term = searchInput.value.toLowerCase()

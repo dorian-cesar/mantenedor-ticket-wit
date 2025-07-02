@@ -105,8 +105,8 @@ function iniciarDashboardConToken(token) {
         if (!label || !valor) return;
 
         switch(label) {
-          case "Tickets creados":
-            valor.textContent = stats.creados ?? "--";
+          case "Tickets asignados":
+            valor.textContent = stats.asignado ?? "--";
             break;
           case "Tickets en ejecución":
             valor.textContent = stats.enEjecucion ?? "--";
@@ -119,6 +119,9 @@ function iniciarDashboardConToken(token) {
             break;
           case "Tickets listos":
             valor.textContent = stats.listos ?? "--";
+            break;
+          case "Tickets rechazados":
+            valor.textContent = stats.rechazados ?? "--";
             break;
         }
       });
@@ -142,21 +145,36 @@ function actualizarEstadoSistema(texto, estado) {
 
 async function obtenerEstadisticasTickets(token) {
   try {
-    const res = await fetch("https://tickets.dev-wit.com/api/tickets", {
-      headers: { "Authorization": `Bearer ${token}` }
-    });
-    if (!res.ok) throw new Error("Error al obtener tickets");
-    const tickets = await res.json();
-    if (!Array.isArray(tickets)) return {};
+    const [ticketsRes, estadosRes] = await Promise.all([
+      fetch("https://tickets.dev-wit.com/api/tickets", {
+        headers: { Authorization: `Bearer ${token}` }
+      }),
+      fetch("https://tickets.dev-wit.com/api/estados", {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+    ]);
+
+    if (!ticketsRes.ok || !estadosRes.ok) throw new Error("Error al obtener datos");
+
+    const tickets = await ticketsRes.json();
+    const estados = await estadosRes.json();
+
+    const estadoMap = Object.fromEntries(estados.map(e => [e.nombre.toLowerCase(), e.id]));
+
     return {
-      creados: tickets.filter(t => t.estado?.toLowerCase() === "creado").length,
-      enEjecucion: tickets.filter(t => t.estado?.toLowerCase() === "en ejecución").length,
-      pendientes: tickets.filter(t => t.estado?.toLowerCase() === "pendiente por presupuesto").length,
-      cancelados: tickets.filter(t => t.estado?.toLowerCase() === "cancelado").length,
-      listos: tickets.filter(t => t.estado?.toLowerCase() === "listo").length
+      asignado: tickets.filter(t => t.id_estado === estadoMap["asignado"]).length,
+      enEjecucion: tickets.filter(t => t.id_estado === estadoMap["en ejecución"]).length,
+      pendientes: tickets.filter(t =>
+        t.id_estado === estadoMap["pendiente pa"] ||
+        t.id_estado === estadoMap["pendiente pp"]
+      ).length,
+      cancelados: tickets.filter(t => t.id_estado === estadoMap["cancelado"]).length,
+      listos: tickets.filter(t => t.id_estado === estadoMap["listo"]).length,
+      rechazados: tickets.filter(t => t.id_estado === estadoMap["rechazado"]).length
     };
   } catch (err) {
     console.error("Error al obtener estadísticas de tickets:", err);
     return {};
   }
 }
+

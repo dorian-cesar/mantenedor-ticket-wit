@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Categorías de servicios</title>
+  <link rel="icon" type="image/svg+xml" href="../img/icono.png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <div id="navbar-container"></div>
+  <div class="container py-5">
+    <div class="mb-4">      
+      <h1 class="mt-3 fw-bold">Categorías de servicios</h1>
+      <p class="text-muted">Administra las categorías para los tipos de atención</p>
+    </div>
+
+    <div class="card">
+
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Lista de categorías</h5>
+        <div class="d-flex gap-2 ms-auto">
+          <button class="btn btn-outline-secondary" id="btn-actualizar">
+            <i class="bi bi-arrow-clockwise me-1"></i>Actualizar
+          </button>
+          <button id="btnNuevaCategoria" class="btn btn-dark">
+            <i class="bi bi-plus me-2"></i>Nueva Categoría
+          </button>
+        </div>
+      </div>      
+
+      <div class="card-body">
+        <div class="mb-3 position-relative">
+          <i class="bi bi-search position-absolute top-50 translate-middle-y ms-3"></i>
+          <input type="text" class="form-control ps-5" id="searchInput" placeholder="Buscar por nombre o descripción...">
+        </div>
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Fecha Creación</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tablaCategorias"></tbody>
+          </table>
+        </div>
+        <div id="mensajeVacio" class="text-center text-muted" style="display: none;">No se encontraron categorías</div>
+      </div>
+    </div>
+
+    <!-- Modal Categoría -->
+    <div class="modal fade" id="modalCategoria" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form id="formCategoria">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalCategoriaLabel">Crear Categoría</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" id="nombre" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label for="descripcion" class="form-label">Descripción</label>
+                <input type="text" id="descripcion" class="form-control">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Guardar</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal para eliminar categoría -->
+    <div class="modal fade" id="modalEliminarCategoria" tabindex="-1" aria-labelledby="modalEliminarCategoriaLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <form id="formEliminarCategoria">
+            <div class="modal-header">
+            <h5 class="modal-title" id="modalEliminarCategoriaLabel">Eliminar Área</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+            <input type="hidden" id="eliminarCategoriaId">
+            <p>¿Estás seguro de que deseas eliminar esta área? Esta acción es irreversible.</p>
+            <div class="mb-3">
+                <label for="passwordEliminarCategoria" class="form-label">Ingresa tu contraseña para confirmar:</label>
+                <input type="password" class="form-control" id="passwordEliminarCategoria" required>
+            </div>
+            
+            </div>
+            <div class="modal-footer">
+            <button type="submit" class="btn btn-danger">Eliminar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+        </form>
+        </div>
+    </div>
+    </div>
+  <script src="/js/toast.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>  
+  <script>
+    // Cargar el navbar desde archivo externo
+    fetch("/navbar.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("navbar-container").innerHTML = html;
+
+        // Cargar el JS y luego inicializar
+        const script = document.createElement("script");
+        script.src = "/js/navbar.js";
+        script.onload = () => inicializarNavbar();
+        document.body.appendChild(script);
+    });
+  </script> 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="categorias.js"></script>
+</body>
+</html>

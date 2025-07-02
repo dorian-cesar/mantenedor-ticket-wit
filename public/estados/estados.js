@@ -138,8 +138,7 @@ function editarEstado(id) {
   const estado = estados.find((a) => a.id === id)
   if (!estado) return
   editingEstado = estado
-  document.getElementById("nombre").value = estado.nombre
-  document.getElementById("descripcion").value = estado.descripcion || ""
+  document.getElementById("nombre").value = estado.nombre  
   document.getElementById("modalEstadoLabel").textContent = "Editar Estado"
   modal.show()
 }

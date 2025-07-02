@@ -126,8 +126,7 @@ function editarArea(id) {
   const area = areas.find((a) => a.id === id)
   if (!area) return
   editingArea = area
-  document.getElementById("nombre").value = area.nombre
-  document.getElementById("descripcion").value = area.descripcion || ""
+  document.getElementById("nombre").value = area.nombre  
   document.getElementById("modalAreaLabel").textContent = "Editar Área"
   modal.show()
 }

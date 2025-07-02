@@ -126,8 +126,7 @@ function editarCategoria(id) {
   const categoria = categorias.find((a) => a.id === id)
   if (!categoria) return
   editingCategorias = categoria
-  document.getElementById("nombre").value = categoria.nombre
-  document.getElementById("descripcion").value = categoria.descripcion || ""
+  document.getElementById("nombre").value = categoria.nombre  
   document.getElementById("modalCategoriaLabel").textContent = "Editar categoría"
   modal.show()
 }

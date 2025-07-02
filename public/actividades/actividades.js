@@ -119,8 +119,7 @@ function editarActividad(id) {
   const actividad = actividades.find((a) => a.id === id)
   if (!actividad) return
   editingActividad = actividad
-  document.getElementById("nombre").value = actividad.nombre
-  document.getElementById("descripcion").value = "" // opcional
+  document.getElementById("nombre").value = actividad.nombre  
   document.getElementById("modalActividadLabel").textContent = "Editar Actividad"
   modal.show()
 }

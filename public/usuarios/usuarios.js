@@ -196,9 +196,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const supervisorId = document.getElementById("supervisor").value;
 
     if (!supervisorId) {
-      alert("Debes seleccionar un supervisor.");
+      showToast("Error", "Debes seleccionar un supervisor.", true);
       return;
-    }
+    }   
 
     const nuevoUsuario = {
       nombre,
@@ -220,8 +220,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData?.message || `Error ${res.status}`);
-      }
+        throw new Error(errorData?.error || errorData?.message || `Error ${res.status}`);
+      }     
 
       const creado = await res.json();
       await cargarUsuariosDesdeAPI();
@@ -235,7 +235,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     } catch (error) {
       console.error("Error al crear usuario:", error);
-      alert("No se pudo crear el usuario. " + error.message);
+
+      if (error.message.includes("correo electrónico ya está registrado")) {
+        showToast("Error", "Este correo ya está en uso. Intenta con otro.", true);
+      } else {
+        showToast("Error", "No se pudo crear el usuario. " + error.message, true);
+      }
     }
   });
 

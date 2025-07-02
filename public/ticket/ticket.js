@@ -2,6 +2,7 @@ let tickets = [];
 let todosLosTickets = [];
 let tipos = [];
 let usuarios = [];
+let estados = [];
 
 const token = localStorage.getItem("token");
 const usuario = JSON.parse(localStorage.getItem("usuario"));
@@ -23,13 +24,14 @@ if (!token || !usuario) {
 async function cargarTicketsDesdeAPI() {
   const headers = { Authorization: `Bearer ${token}` };
 
-  const [ticketsRes, tiposRes, usuariosRes] = await Promise.all([
+  const [ticketsRes, tiposRes, usuariosRes, estadosRes] = await Promise.all([
     fetch("https://tickets.dev-wit.com/api/tickets", { headers }),
     fetch("https://tickets.dev-wit.com/api/tipos", { headers }),
-    fetch("https://tickets.dev-wit.com/api/users", { headers })
+    fetch("https://tickets.dev-wit.com/api/users", { headers }),
+    fetch("https://tickets.dev-wit.com/api/estados", { headers })
   ]);
 
-  if (!ticketsRes.ok || !tiposRes.ok || !usuariosRes.ok) {
+  if (!ticketsRes.ok || !tiposRes.ok || !usuariosRes.ok || !estadosRes.ok) {
     mostrarError("Error al obtener datos del servidor");
     return;
   }
@@ -37,6 +39,7 @@ async function cargarTicketsDesdeAPI() {
   const datosTickets = await ticketsRes.json();
   tipos = await tiposRes.json();
   usuarios = await usuariosRes.json();
+  estados = await estadosRes.json();
 
   todosLosTickets = datosTickets.map(ticket => enriquecerTicket(ticket));
   tickets = todosLosTickets
@@ -49,6 +52,7 @@ async function cargarTicketsDesdeAPI() {
 
 function enriquecerTicket(ticket) {
   const tipo = tipos.find(t => t.nombre === ticket.tipo_atencion);
+  const estadoObj = estados.find(e => e.id === ticket.id_estado);
 
   let ejecutorNombre = "-";
   let correoEjecutor = "-";
@@ -62,7 +66,8 @@ function enriquecerTicket(ticket) {
   return {
     ...ticket,
     ejecutor: ejecutorNombre,
-    corre_ejecutor: correoEjecutor
+    corre_ejecutor: correoEjecutor,
+    estado: estadoObj?.nombre || "-"
   };
 }
 
@@ -206,11 +211,12 @@ function mostrarMensajeVacio(mensaje) {
 function getBadgeClass(estado) {
   if (!estado) return "bg-secondary";
   const normalized = estado.trim().toLowerCase();
+  if (normalized === "pendiente pa") return "badge-estado-pendientepa";
+  if (normalized === "asignado") return "badge-estado-asignado";
   if (normalized === "en ejecución") return "badge-estado-ejecucion";
-  if (normalized === "creado") return "badge-estado-creado";
-  if (normalized === "pendiente por presupuesto") return "badge-estado-pendiente";
+  if (normalized === "pendiente pp") return "badge-estado-pendientepp";
   if (normalized === "cancelado") return "badge-estado-cancelado";
-  if (normalized === "listo") return "badge-estado-listo";
+  if (normalized === "listo") return "badge-estado-listo";  
   if (normalized === "rechazado") return "badge-estado-rechazado";
   return "bg-secondary";
 }

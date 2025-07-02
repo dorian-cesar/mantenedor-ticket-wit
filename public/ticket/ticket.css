@@ -1,15 +1,20 @@
+.badge-estado-pendientepa {
+  background-color: #f39c12 !important;
+  color: #000;
+}
+
+.badge-estado-asignado {
+  background-color: #2c3e50 !important;
+  color: #fff;
+}
+
 .badge-estado-ejecucion {
   background-color: #3498db !important;
   color: #fff;
 }
 
-.badge-estado-creado {
-  background-color: #2c3e50 !important;
-  color: #fff;
-}
-
-.badge-estado-pendiente {
-  background-color: #f39c12 !important;
+.badge-estado-pendientepp {
+  background-color: #f35212 !important;
   color: #000;
 }
 

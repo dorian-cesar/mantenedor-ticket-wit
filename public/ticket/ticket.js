@@ -127,14 +127,17 @@ function renderizarTickets() {
           <img src="/img/ojo.png" alt="Ver observación" style="width: 20px; cursor: pointer;" class="ms-2 view-details">
         </div>
       </td>
-      <td>
-        <button class="btn btn-sm btn-outline-primary me-2" onclick="editarEstado">
-          <i class="bi bi-pencil"></i>
-        </button>
-        <button class="btn btn-sm btn-outline-danger" onclick="eliminarEstado">
-          <i class="bi bi-trash"></i>
-        </button>
-      </td>`
+      <td class="text-center">
+        <div class="d-inline-flex gap-2">
+          <button class="btn btn-sm btn-outline-primary" onclick="editarEstado">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-danger" onclick="eliminarEstado">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+      </td>
+      `
     row.querySelector(".view-details").addEventListener("click", () => mostrarDetallesTicket(ticket));
     tabla.appendChild(row);
   });

@@ -35,9 +35,11 @@ document.addEventListener("DOMContentLoaded", () => {
         <td>${srv.categoria}</td>
         <td>${srv.area_nombre}</td>
         <td>${srv.ejecutor_nombre}</td>
-        <td>
-          <button class="btn btn-sm btn-outline-primary me-2" onclick="editarAtencion(${srv.id})"><i class="bi bi-pencil"></i></button>
-          <button class="btn btn-sm btn-outline-danger" onclick="confirmarEliminar(${srv.id})"><i class="bi bi-trash"></i></button>
+        <td class="text-center">
+          <div class="d-inline-flex gap-2">
+            <button class="btn btn-sm btn-outline-primary me-2" onclick="editarAtencion(${srv.id})"><i class="bi bi-pencil"></i></button>
+            <button class="btn btn-sm btn-outline-danger" onclick="confirmarEliminar(${srv.id})"><i class="bi bi-trash"></i></button>
+          </div>
         </td>
       `;
       tabla.appendChild(tr);

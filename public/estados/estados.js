@@ -42,13 +42,15 @@ function renderTabla(filtradas) {
       <td>${estado.id}</td>
       <td>${estado.nombre}</td>
       <td><span class="badge ${badgeClass}">${estado.nombre}</span></td>
-      <td>
-        <button class="btn btn-sm btn-outline-primary me-2" onclick="editarEstado(${estado.id})">
-          <i class="bi bi-pencil"></i>
-        </button>
-        <button class="btn btn-sm btn-outline-danger" onclick="eliminarEstado(${estado.id})">
-          <i class="bi bi-trash"></i>
-        </button>
+      <td class="text-center">
+        <div class="d-inline-flex gap-2">
+          <button class="btn btn-sm btn-outline-primary me-2" onclick="editarEstado(${estado.id})">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-danger" onclick="eliminarEstado(${estado.id})">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>  
       </td>
     `
     tabla.appendChild(tr)

@@ -41,13 +41,15 @@ function renderTabla(filtradas) {
       <td>${categoria.nombre}</td>
       <td>${categoria.descripcion || "Sin descripción"}</td>
       <td>${new Date(categoria.fechaCreacion || Date.now()).toLocaleDateString("es-ES")}</td>
-      <td>
-        <button class="btn btn-sm btn-outline-primary me-2" onclick="editarCategoria(${categoria.id})">
-          <i class="bi bi-pencil"></i>
-        </button>
-        <button class="btn btn-sm btn-outline-danger" onclick="eliminarCategoria(${categoria.id})">
-          <i class="bi bi-trash"></i>
-        </button>
+      <td class="text-center">
+        <div class="d-inline-flex gap-2">
+          <button class="btn btn-sm btn-outline-primary me-2" onclick="editarCategoria(${categoria.id})">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-danger" onclick="eliminarCategoria(${categoria.id})">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
       </td>
     `
     tabla.appendChild(tr)

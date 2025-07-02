@@ -38,18 +38,20 @@ document.addEventListener("DOMContentLoaded", () => {
         <td>${usuario.email}</td>
         <td><span class="badge ${getRolBadgeClass(usuario.rol)}">${usuario.rol || 'Sin rol'}</span></td>
         <td>${mapaUsuarios[usuario.id_jefatura] || '-'}</td>
-        <td>
-          <button class="btn btn-sm btn-outline-primary me-1 btn-editar" data-id="${usuario.id}" data-nombre="${usuario.nombre}" data-email="${usuario.email}" data-rol="${usuario.rol}">
-            <i class="bi bi-pencil"></i>
-          </button>
-          ${usuario.id === currentUser.id
-            ? `<button class="btn btn-sm btn-secondary" disabled title="No puedes eliminar tu propia cuenta">
-                <i class="bi bi-lock"></i>
-              </button>`
-            : `<button class="btn btn-sm btn-outline-danger btn-eliminar" data-id="${usuario.id}">
-                <i class="bi bi-trash"></i>
-              </button>`
-          }
+        <td class="text-center">
+          <div class="d-inline-flex gap-2">
+            <button class="btn btn-sm btn-outline-primary me-1 btn-editar" data-id="${usuario.id}" data-nombre="${usuario.nombre}" data-email="${usuario.email}" data-rol="${usuario.rol}">
+              <i class="bi bi-pencil"></i>
+            </button>
+            ${usuario.id === currentUser.id
+              ? `<button class="btn btn-sm btn-secondary" disabled title="No puedes eliminar tu propia cuenta">
+                  <i class="bi bi-lock"></i>
+                </button>`
+              : `<button class="btn btn-sm btn-outline-danger btn-eliminar" data-id="${usuario.id}">
+                  <i class="bi bi-trash"></i>
+                </button>`
+            }
+          </div>
         </td>
       `;
       tablaUsuarios.appendChild(fila);

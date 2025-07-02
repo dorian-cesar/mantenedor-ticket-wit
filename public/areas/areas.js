@@ -58,9 +58,7 @@ function renderTabla(filtradas) {
 function filtrar() {
   const term = searchInput.value.toLowerCase()
   const resultado = areas.filter(
-    (a) =>
-      a.nombre.toLowerCase().includes(term) ||
-      (a.descripcion && a.descripcion.toLowerCase().includes(term))
+    (a) => a.nombre.toLowerCase().includes(term)
   )
   renderTabla(resultado)
 }
@@ -74,8 +72,7 @@ document.getElementById("btnNuevaArea").addEventListener("click", () => {
 
 document.getElementById("formArea").addEventListener("submit", async (e) => {
   e.preventDefault()
-  const nombre = document.getElementById("nombre").value.trim()
-  const descripcion = document.getElementById("descripcion").value.trim()
+  const nombre = document.getElementById("nombre").value.trim()  
   const token = localStorage.getItem("token")
 
   try {
@@ -87,7 +84,7 @@ document.getElementById("formArea").addEventListener("submit", async (e) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ nombre, descripcion }),
+        body: JSON.stringify({ nombre }),
       })
 
       showToast("Éxito", "Aŕea editada exitosamente.")
@@ -104,7 +101,7 @@ document.getElementById("formArea").addEventListener("submit", async (e) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ nombre, descripcion }),
+        body: JSON.stringify({ nombre }),
         
       })
 

@@ -35,12 +35,11 @@ function renderTabla(filtradas) {
     return
   }
   mensajeVacio.style.display = "none"
-  filtradas.forEach((categoria) => {
+  filtradas.forEach((categoria, index) => {
     const tr = document.createElement("tr")
     tr.innerHTML = `
-      <td>${categoria.nombre}</td>
-      <td>${categoria.descripcion || "Sin descripción"}</td>
-      <td>${new Date(categoria.fechaCreacion || Date.now()).toLocaleDateString("es-ES")}</td>
+      <td>${index + 1}</td>
+      <td>${categoria.nombre}</td>    
       <td class="text-center">
         <div class="d-inline-flex gap-2">
           <button class="btn btn-sm btn-outline-primary me-2" onclick="editarCategoria(${categoria.id})">

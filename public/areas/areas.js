@@ -35,12 +35,11 @@ function renderTabla(filtradas) {
     return
   }
   mensajeVacio.style.display = "none"
-  filtradas.forEach((area) => {
+  filtradas.forEach((area, index) => {
     const tr = document.createElement("tr")
     tr.innerHTML = `
-      <td>${area.nombre}</td>
-      <td>${area.descripcion || "Sin descripción"}</td>
-      <td>${new Date(area.fechaCreacion || Date.now()).toLocaleDateString("es-ES")}</td>
+      <td>${index + 1}</td>
+      <td>${area.nombre}</td>     
       <td class="text-center">
         <div class="d-inline-flex gap-2">
           <button class="btn btn-sm btn-outline-primary me-2" onclick="editarArea(${area.id})">

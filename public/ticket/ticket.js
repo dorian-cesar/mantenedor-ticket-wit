@@ -1,15 +1,37 @@
+document.getElementById("searchInputActivos")?.addEventListener("input", filtrarTickets);
+document.getElementById("searchInputListos")?.addEventListener("input", filtrarTickets);
+
 let tickets = [];
 let todosLosTickets = [];
 let tipos = [];
 let usuarios = [];
 let estados = [];
 
+let ticketsActivos = [];
+let ticketsListos = [];
+
+let ticketsFiltradosActivos = [];
+let ticketsFiltradosListos = [];
+
+let paginaActualActivos = 1;
+let paginaActualListos = 1;
+
+
 const token = localStorage.getItem("token");
 const usuario = JSON.parse(localStorage.getItem("usuario"));
 const tabla = document.getElementById("statusTableBody");
-const searchInput = document.querySelector(".tab-pane.active input[type='text']");
 const mensajeVacio = document.querySelector(".tab-pane.active #mensajeVacio");
 const ticketModal = new bootstrap.Modal(document.getElementById("ticketModal"));
+
+function getSearchInputActivo() {
+  const activeTab = document.querySelector(".tab-pane.active")?.id;
+  if (activeTab === "activos") {
+    return document.getElementById("searchInputActivos");
+  } else if (activeTab === "cerrados") {
+    return document.getElementById("searchInputListos");
+  }
+  return null;
+}
 
 let paginaActual = 1;
 const registrosPorPagina = 15;
@@ -67,7 +89,12 @@ async function cargarTicketsDesdeAPI() {
       .sort((a, b) => new Date(b.fecha_creacion) - new Date(a.fecha_creacion))
       .slice(0, 200);
 
-    ticketsFiltrados = [...tickets];
+    ticketsActivos = tickets.filter(t => t.estado.toLowerCase() !== "listo");
+    ticketsListos = tickets.filter(t => t.estado.toLowerCase() === "listo");
+
+    ticketsFiltradosActivos = [...ticketsActivos];
+    ticketsFiltradosListos = [...ticketsListos];
+
     filtrarTickets();
 
   } catch (error) {
@@ -113,36 +140,64 @@ document.querySelectorAll('#statusTabs .nav-link').forEach(btn => {
     document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
     const target = btn.getAttribute('data-bs-target');
     document.querySelector(target).classList.add('active');
+    getSearchInputActivo()?.dispatchEvent(new Event("input"));
 
-    paginaActual = 1;
-    filtrarTickets();
+
+
+    if (target === "#activos") {
+      renderizarTicketsActivos();
+      actualizarPaginacionActivos();
+    } else if (target === "#cerrados") {
+      renderizarTicketsListos();
+      actualizarPaginacionListos();
+    }
   });
 });
 
+
 function filtrarTickets() {
-  const termino = searchInput.value.toLowerCase().trim();
-  const origen = termino === "" ? tickets : todosLosTickets;
+  const searchInput = getSearchInputActivo();
+  const termino = searchInput?.value.toLowerCase().trim() || "";
+  const activeTab = document.querySelector(".tab-pane.active")?.id;
 
-  ticketsFiltrados = origen.filter(ticket =>
-    ticket.id.toString().includes(termino) ||
-    ticket.observaciones?.toLowerCase().includes(termino) ||
-    ticket.estado?.toLowerCase().includes(termino) ||
-    ticket.solicitante?.toLowerCase().includes(termino) ||
-    ticket.area?.toLowerCase().includes(termino) ||
-    ticket.tipo_atencion?.toLowerCase().includes(termino) ||
-    ticket.ejecutor?.toLowerCase().includes(termino)
-  );
+  if (activeTab === "activos") {
+    ticketsFiltradosActivos = ticketsActivos.filter(ticket =>
+      ticket.id.toString().includes(termino) ||
+      ticket.observaciones?.toLowerCase().includes(termino) ||
+      ticket.estado?.toLowerCase().includes(termino) ||
+      ticket.solicitante?.toLowerCase().includes(termino) ||
+      ticket.area?.toLowerCase().includes(termino) ||
+      ticket.tipo_atencion?.toLowerCase().includes(termino) ||
+      ticket.ejecutor?.toLowerCase().includes(termino)
+    );
+    paginaActualActivos = 1;
+    renderizarTicketsActivos();
+    actualizarPaginacionActivos();
 
-  paginaActual = 1;
-  renderizarTickets();
-  actualizarPaginacion();
+  } else if (activeTab === "cerrados") {
+    ticketsFiltradosListos = ticketsListos.filter(ticket =>
+      ticket.id.toString().includes(termino) ||
+      ticket.observaciones?.toLowerCase().includes(termino) ||
+      ticket.estado?.toLowerCase().includes(termino) ||
+      ticket.solicitante?.toLowerCase().includes(termino) ||
+      ticket.area?.toLowerCase().includes(termino) ||
+      ticket.tipo_atencion?.toLowerCase().includes(termino) ||
+      ticket.ejecutor?.toLowerCase().includes(termino)
+    );
+    paginaActualListos = 1;
+    renderizarTicketsListos();
+    actualizarPaginacionListos();
+  }
 }
 
-function renderizarTickets() {
+
+
+function renderizarTicketsActivos() {
+  const tabla = document.getElementById("statusTableBody");
   tabla.innerHTML = "";
-  const inicio = (paginaActual - 1) * registrosPorPagina;
+  const inicio = (paginaActualActivos - 1) * registrosPorPagina;
   const fin = inicio + registrosPorPagina;
-  const ticketsPagina = ticketsFiltrados.slice(inicio, fin);
+  const ticketsPagina = ticketsFiltradosActivos.slice(inicio, fin);
 
   if (ticketsPagina.length === 0) {
     mostrarMensajeVacio("No se encontraron tickets");
@@ -150,32 +205,105 @@ function renderizarTickets() {
   }
 
   ticketsPagina.forEach(ticket => {
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${ticket.id}</td>
-      <td>${ticket.observaciones || '-'}</td>
-      <td>
-        <div class="d-flex justify-content-between align-items-center">
-          <span class="badge ${getBadgeClass(ticket.estado)}">${ticket.estado || '-'}</span>
-          <img src="/img/ojo.png" alt="Ver observación" style="width: 20px; cursor: pointer;" class="ms-2 view-details">
-        </div>
-      </td>
-      <td class="text-center">
-        <div class="d-inline-flex gap-2">
-          <button class="btn btn-sm btn-outline-primary" onclick="editarEstado">
-            <i class="bi bi-pencil"></i>
-          </button>
-          <button class="btn btn-sm btn-outline-danger" onclick="eliminarEstado">
-            <i class="bi bi-trash"></i>
-          </button>
-        </div>
-      </td>
-      `
-    row.querySelector(".view-details").addEventListener("click", () => mostrarDetallesTicket(ticket));
+    const row = crearFilaTicket(ticket);
     tabla.appendChild(row);
   });
 
-  document.getElementById("paginacion-info").textContent = `Mostrando ${ticketsPagina.length} de ${ticketsFiltrados.length} tickets`;
+  document.getElementById("paginacion-info").textContent = `Mostrando ${ticketsPagina.length} de ${ticketsFiltradosActivos.length} tickets`;
+}
+
+function renderizarTicketsListos() {
+  const tabla = document.getElementById("statusTableBodyCerrados");
+  tabla.innerHTML = "";
+  const inicio = (paginaActualListos - 1) * registrosPorPagina;
+  const fin = inicio + registrosPorPagina;
+  const ticketsPagina = ticketsFiltradosListos.slice(inicio, fin);
+
+  if (ticketsPagina.length === 0) {
+    mostrarMensajeVacioCerrados("No se encontraron tickets listos");
+    return;
+  }
+
+  ticketsPagina.forEach(ticket => {
+    const row = crearFilaTicket(ticket);
+    tabla.appendChild(row);
+  });
+
+  document.getElementById("paginacion-info-cerrados").textContent = `Mostrando ${ticketsPagina.length} de ${ticketsFiltradosListos.length} tickets`;
+}
+
+function actualizarPaginacionActivos() {
+  const totalPaginas = Math.ceil(ticketsFiltradosActivos.length / registrosPorPagina);
+  const contenedor = document.getElementById("paginacion-control");
+  contenedor.innerHTML = "";
+  if (totalPaginas <= 1) return;
+
+  const crear = (texto, deshabilitado, click) => {
+    const li = document.createElement("li");
+    li.className = `page-item ${deshabilitado ? "disabled" : ""}`;
+    li.innerHTML = `<a class="page-link" href="#">${texto}</a>`;
+    li.addEventListener("click", e => {
+      e.preventDefault();
+      if (!deshabilitado) click();
+    });
+    contenedor.appendChild(li);
+  };
+
+  crear("«", paginaActualActivos === 1, () => { paginaActualActivos--; renderizarTicketsActivos(); actualizarPaginacionActivos(); });
+  for (let i = 1; i <= totalPaginas; i++) {
+    crear(i, i === paginaActualActivos, () => { paginaActualActivos = i; renderizarTicketsActivos(); actualizarPaginacionActivos(); });
+  }
+  crear("»", paginaActualActivos === totalPaginas, () => { paginaActualActivos++; renderizarTicketsActivos(); actualizarPaginacionActivos(); });
+}
+
+function actualizarPaginacionListos() {
+  const totalPaginas = Math.ceil(ticketsFiltradosListos.length / registrosPorPagina);
+  const contenedor = document.getElementById("paginacion-control-cerrados");
+  contenedor.innerHTML = "";
+  if (totalPaginas <= 1) return;
+
+  const crear = (texto, deshabilitado, click) => {
+    const li = document.createElement("li");
+    li.className = `page-item ${deshabilitado ? "disabled" : ""}`;
+    li.innerHTML = `<a class="page-link" href="#">${texto}</a>`;
+    li.addEventListener("click", e => {
+      e.preventDefault();
+      if (!deshabilitado) click();
+    });
+    contenedor.appendChild(li);
+  };
+
+  crear("«", paginaActualListos === 1, () => { paginaActualListos--; renderizarTicketsListos(); actualizarPaginacionListos(); });
+  for (let i = 1; i <= totalPaginas; i++) {
+    crear(i, i === paginaActualListos, () => { paginaActualListos = i; renderizarTicketsListos(); actualizarPaginacionListos(); });
+  }
+  crear("»", paginaActualListos === totalPaginas, () => { paginaActualListos++; renderizarTicketsListos(); actualizarPaginacionListos(); });
+}
+
+function crearFilaTicket(ticket) {
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td>${ticket.id}</td>
+    <td>${ticket.observaciones || '-'}</td>
+    <td>
+      <div class="d-flex justify-content-between align-items-center">
+        <span class="badge ${getBadgeClass(ticket.estado)}">${ticket.estado || '-'}</span>
+        <img src="/img/ojo.png" alt="Ver observación" style="width: 20px; cursor: pointer;" class="ms-2 view-details">
+      </div>
+    </td>
+    <td class="text-center">
+      <div class="d-inline-flex gap-2">
+        <button class="btn btn-sm btn-outline-primary" onclick="editarEstado()">
+          <i class="bi bi-pencil"></i>
+        </button>
+        <button class="btn btn-sm btn-outline-danger" onclick="eliminarEstado()">
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
+    </td>
+  `;
+  row.querySelector(".view-details").addEventListener("click", () => mostrarDetallesTicket(ticket));
+  return row;
 }
 
 function actualizarPaginacion() {
@@ -247,6 +375,18 @@ function mostrarMensajeVacio(mensaje) {
   }
 }
 
+function mostrarMensajeVacioCerrados(mensaje) {
+  const mensajeVacio = document.getElementById("mensajeVacioCerrados");
+  const tabla = document.getElementById("statusTableBodyCerrados");
+  if (mensajeVacio) {
+    mensajeVacio.style.display = "block";
+    mensajeVacio.textContent = mensaje;
+  } else {
+    tabla.innerHTML = `<tr><td colspan="4" class="text-center text-muted">${mensaje}</td></tr>`;
+  }
+}
+
+
 function getBadgeClass(estado) {
   if (!estado) return "bg-secondary";
   const normalized = estado.trim().toLowerCase();
@@ -258,10 +398,6 @@ function getBadgeClass(estado) {
   if (normalized === "listo") return "badge-estado-listo";  
   if (normalized === "rechazado") return "badge-estado-rechazado";
   return "bg-secondary";
-}
-
-if (searchInput) {
-  searchInput.addEventListener("input", filtrarTickets);
 }
 
 const btnActualizar = document.getElementById("btn-actualizar");

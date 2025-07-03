@@ -59,7 +59,7 @@
             <!-- Search -->
             <div class="mb-3 position-relative">
               <i class="bi bi-search position-absolute top-50 translate-middle-y ms-3"></i>
-              <input type="text" class="form-control ps-5" placeholder="Buscar ticket...">
+              <input type="text" id="searchInputActivos" class="form-control ps-5" placeholder="Buscar ticket...">
             </div>
             
             <!-- Table -->
@@ -104,9 +104,44 @@
           <div class="card-header">
             <h5 class="mb-0">Tickets Inactivos</h5>
           </div>
+
+          <!-- Dentro de #cerrados -->
           <div class="card-body">
-            <div id="mensajeInactivos" class="text-center text-muted">
-              No hay tickets cerrados
+
+            <!-- Search -->
+            <div class="mb-3 position-relative">
+              <i class="bi bi-search position-absolute top-50 translate-middle-y ms-3"></i>
+              <input type="text" id="searchInputListos" class="form-control ps-5" placeholder="Buscar ticket...">
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                  <tr>
+                    <th style="width: 5%;">ID</th>
+                    <th style="width: 70%;">Observación</th>
+                    <th style="width: 15%;">Estado</th>
+                    <th style="width: 10%;">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="statusTableBodyCerrados">
+                  <tr>
+                    <td colspan="4" class="text-center text-muted">Cargando datos...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <div class="text-muted" id="paginacion-info-cerrados">Mostrando 0 de 0 tickets</div>
+              <nav>
+                <ul class="pagination mb-0" id="paginacion-control-cerrados"></ul>
+              </nav>
+            </div>
+
+            <div id="mensajeVacioCerrados" class="text-center text-muted" style="display: none;">
+              No se encontraron tickets listos
             </div>
           </div>
         </div>

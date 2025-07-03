@@ -264,7 +264,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // Luego crear el objeto payload
-      const payload = { nombre, email, rol };
+      const payload = { nombre, email };
+      if (rol) payload.rol = rol;
+
       
       // Agregar campos condicionales
       if (password) payload.password = password;

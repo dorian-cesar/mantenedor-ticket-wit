@@ -47,7 +47,7 @@ function initToastContainer() {
         height: 4px;
         background-color: rgb(100, 100, 100);
         width: 100%;
-        animation: toast-progress-animation 5s linear forwards;
+        animation: toast-progress-animation 4s linear forwards;
       }
 
       @keyframes toast-progress-animation {
@@ -104,7 +104,7 @@ function showToast(title, message, isError = false) {
   toastContainer.insertAdjacentHTML('beforeend', toastHTML);
 
   const toastEl = document.getElementById(id);
-  const toast = new bootstrap.Toast(toastEl, { autohide: true, delay: 5000 });
+  const toast = new bootstrap.Toast(toastEl, { autohide: true, delay: 4000 });
   toast.show();
 
   toastEl.addEventListener('hidden.bs.toast', () => {

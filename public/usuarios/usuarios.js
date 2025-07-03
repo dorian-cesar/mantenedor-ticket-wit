@@ -406,6 +406,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (normalized === "solicitante") return "badge-usuario-solicitante";
     if (normalized === "admin") return "badge-usuario-admin";
     if (normalized === "jefatura") return "badge-usuario-jefatura";
+    if (normalized === "superuser") return "badge-usuario-superuser";
 
     return "bg-secondary"; // fallback
   }

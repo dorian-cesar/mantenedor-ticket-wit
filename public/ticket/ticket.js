@@ -153,7 +153,6 @@ document.querySelectorAll('#statusTabs .nav-link').forEach(btn => {
   });
 });
 
-
 function filtrarTickets() {
   const searchInput = getSearchInputActivo();
   const termino = searchInput?.value.toLowerCase().trim() || "";

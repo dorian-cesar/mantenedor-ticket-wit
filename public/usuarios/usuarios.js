@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const mapaUsuarios = {};
-    data.forEach(u => {
+    usuarios.forEach(u => {
       if (u?.id) {
         mapaUsuarios[u.id] = u.nombre;
       }

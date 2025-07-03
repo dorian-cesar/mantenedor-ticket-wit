@@ -37,6 +37,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Paso 4: Función principal del dashboard
 function iniciarDashboardConToken(token) {
+  // Validar rol del usuario
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  const rol = usuario?.rol;
+
+  if (rol !== "admin" && rol !== "jefatura" && rol !== "superuser") {
+    console.warn("Acceso denegado por rol:", rol);
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+    window.location.href = "./index.html";
+    return;
+  }
+  
   // Función mejorada para verificar errores de autenticación
   const verificarAutenticacion = (response) => {
     if (response.status === 401) {

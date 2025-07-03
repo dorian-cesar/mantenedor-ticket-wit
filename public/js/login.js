@@ -54,8 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const rol = resultado.user?.rol?.toLowerCase();
 
-      if (rol !== "admin" && rol !== "jefatura") {
-        throw new Error("Acceso denegado. Roles permitidos: 'admin' o 'jefatura'.");
+      if (rol !== "admin" && rol !== "jefatura" && rol !== "superuser") {
+        throw new Error("Acceso denegado. Tu cuenta no cumple con los requisitos para acceder a esta sección.");
       }
 
       // Guardar token y datos del usuario en localStorage

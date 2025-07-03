@@ -110,8 +110,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const option = document.createElement("option");
         option.value = area.id;
         option.textContent = area.nombre;
+        if (atencionEditando && parseInt(area.id) === parseInt(atencionEditando.area_id)) {
+          option.selected = true;
+        }
         selectArea.appendChild(option);
       });
+
 
       // Cargar ejecutores
       const resUsers = await fetch("https://tickets.dev-wit.com/api/users", {
@@ -124,6 +128,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const option = document.createElement("option");
         option.value = user.id;
         option.textContent = user.nombre;
+        if (atencionEditando && parseInt(user.id) === parseInt(atencionEditando.ejecutor_id)) {
+          option.selected = true;
+        }
         selectEjecutor.appendChild(option);
       });
 
@@ -138,8 +145,15 @@ document.addEventListener("DOMContentLoaded", () => {
         const option = document.createElement("option");
         option.value = categoria.id;
         option.textContent = categoria.nombre;
+
+        // Selecciona automáticamente la categoría si estás editando
+        if (atencionEditando && categoria.nombre === atencionEditando.categoria) {
+          option.selected = true;
+        }
+        
         selectCategoria.appendChild(option);
       });
+
 
     } catch (err) {
       console.error("Error al cargar selects dinámicos:", err);
@@ -237,15 +251,12 @@ document.addEventListener("DOMContentLoaded", () => {
     atencionEditando = atencion;
     document.getElementById("modalServicioLabel").textContent = "Editar Atención";
     document.getElementById("servicioId").value = atencion.id;
-    document.getElementById("nombre").value = atencion.nombre;
-    document.getElementById("categoria_id").value = "";
+    document.getElementById("nombre").value = atencion.nombre;    
 
     cargarSelectsDinamicos().then(() => {
-      document.getElementById("categoria_id").value = atencion.categoria_id;
-      document.getElementById("area_id").value = atencion.area_id;
-      document.getElementById("ejecutor_id").value = atencion.ejecutor_id;
       modalServicio.show();
     });
+
   };
 
   window.confirmarEliminar = function(id) {

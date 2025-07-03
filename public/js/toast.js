@@ -32,10 +32,33 @@
 let toastContainer; // Contenedor de toasts
 
 /**
- * Inicializa el contenedor de toasts si no existe
- * Crea el contenedor HTML donde se apilarán los toasts
+ * Inicializa el contenedor de toasts y los estilos si no existen
  */
 function initToastContainer() {
+  // Crear estilos para barra de progreso si aún no existen
+  if (!document.getElementById('toast-style')) {
+    const style = document.createElement('style');
+    style.id = 'toast-style';
+    style.innerHTML = `
+      .toast-progress {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 4px;
+        background-color: rgb(100, 100, 100);
+        width: 100%;
+        animation: toast-progress-animation 5s linear forwards;
+      }
+
+      @keyframes toast-progress-animation {
+        from { width: 100%; }
+        to { width: 0%; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  // Crear el contenedor si aún no existe
   if (!document.getElementById('toast-container')) {
     const containerHTML = `
       <div id="toast-container" style="
@@ -51,6 +74,7 @@ function initToastContainer() {
     `;
     document.body.insertAdjacentHTML('beforeend', containerHTML);
   }
+
   toastContainer = document.getElementById('toast-container');
 }
 
@@ -61,31 +85,28 @@ function initToastContainer() {
  * @param {boolean} [isError=false] - Si es true, muestra un toast de error (rojo), sino de éxito (verde)
  */
 function showToast(title, message, isError = false) {
-  // Asegurarse que el contenedor esté inicializado
+  // Asegurar que el contenedor y los estilos estén presentes
   if (!toastContainer) initToastContainer();
 
-  // Crear un ID único para el toast
   const id = `toast-${Date.now()}`;
 
-  // HTML del toast individual
   const toastHTML = `
-    <div id="${id}" class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+    <div id="${id}" class="toast show position-relative" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
       <div class="toast-header ${isError ? 'bg-danger text-white' : 'bg-success text-white'}">
         <strong class="me-auto">${title}</strong>
         <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
       </div>
       <div class="toast-body">${message}</div>
+      <div class="toast-progress"></div>
     </div>
   `;
 
-  // Insertar el nuevo toast al final del contenedor (apilamiento vertical)
   toastContainer.insertAdjacentHTML('beforeend', toastHTML);
 
   const toastEl = document.getElementById(id);
   const toast = new bootstrap.Toast(toastEl, { autohide: true, delay: 5000 });
   toast.show();
 
-  // Eliminar del DOM cuando desaparezca
   toastEl.addEventListener('hidden.bs.toast', () => {
     toastEl.remove();
   });

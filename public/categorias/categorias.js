@@ -8,25 +8,44 @@ const modal = new bootstrap.Modal(document.getElementById("modalCategoria"))
 
 async function cargarCategoriasDesdeAPI() {
   try {
-    const token = localStorage.getItem("token")
-    if (!token) throw new Error("Token no encontrado")
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("TOKEN_INVALIDO");
+    }
 
-    const res = await fetch("https://tickets.dev-wit.com/api/categorias", {
+    const res = await fetch(`https://tickets.dev-wit.com/api/categorias?_=${Date.now()}`, {
       headers: {
         Authorization: `Bearer ${token}`,
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
       },
-    })
+    });
 
-    if (!res.ok) throw new Error("Error al obtener las categorias")
+    if (res.status === 401) {
+      throw new Error("TOKEN_INVALIDO");
+    }
 
-    categorias = await res.json()
-    filtrar()
+    if (!res.ok) {
+      throw new Error("Error al obtener las categorias");
+    }
+
+    const data = await res.json();
+    categorias = data;
+    filtrar();
+
   } catch (error) {
-    console.error("Error al cargar categorias:", error)
-    mensajeVacio.textContent = "Error al cargar las categorias"
-    mensajeVacio.style.display = "block"
+    if (error.message === "TOKEN_INVALIDO") {
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+      window.location.href = "../index.html";
+    } else {
+      console.error("Error al cargar categorias:", error);
+      mensajeVacio.textContent = "Error al cargar las categorias";
+      mensajeVacio.style.display = "block";
+    }
   }
 }
+
 
 function renderTabla(filtradas) {
   tabla.innerHTML = ""

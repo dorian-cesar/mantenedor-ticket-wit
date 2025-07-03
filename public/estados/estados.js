@@ -8,23 +8,47 @@ const modal = new bootstrap.Modal(document.getElementById("modalEstado"))
 
 async function cargarEstadosDesdeAPI() {
   try {
-    const token = localStorage.getItem("token")
-    if (!token) throw new Error("Token no encontrado")
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("TOKEN_INVALIDO");
+    }
 
     const res = await fetch("https://tickets.dev-wit.com/api/estados", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
+    });
 
-    if (!res.ok) throw new Error("Error al obtener las estados")
+    // Verificar error de autenticación (401)
+    if (res.status === 401) {
+      throw new Error("TOKEN_INVALIDO");
+    }
 
-    estados = await res.json()
-    filtrar()
+    if (!res.ok) {
+      throw new Error("Error al obtener los estados");
+    }
+
+    const data = await res.json();
+    
+    // Verificar mensaje de token inválido en la respuesta
+    if (data.message === "Token inválido") {
+      throw new Error("TOKEN_INVALIDO");
+    }
+
+    estados = data;
+    filtrar();
+
   } catch (error) {
-    console.error("Error al cargar áreas:", error)
-    mensajeVacio.textContent = "Error al cargar los estados"
-    mensajeVacio.style.display = "block"
+    if (error.message === "TOKEN_INVALIDO") {
+      // Limpiar almacenamiento y redirigir al login
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+      window.location.href = "../index.html";
+    } else {
+      console.error("Error al cargar estados:", error);
+      mensajeVacio.textContent = "Error al cargar los estados";
+      mensajeVacio.style.display = "block";
+    }
   }
 }
 

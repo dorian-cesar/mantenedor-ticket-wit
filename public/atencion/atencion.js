@@ -59,20 +59,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function cargarAtencionesDesdeAPI() {
     try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("TOKEN_INVALIDO");
+      }
+
       const res = await fetch("https://tickets.dev-wit.com/api/tipos", {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
 
-      if (!res.ok) throw new Error("Error al obtener tipos de atención");
+      // Verificar error de autenticación (401)
+      if (res.status === 401) {
+        throw new Error("TOKEN_INVALIDO");
+      }
+
+      if (!res.ok) {
+        throw new Error("Error al obtener tipos de atención");
+      }
 
       atenciones = await res.json();
       filtrar();
+
     } catch (err) {
-      console.error("Error cargando atenciones:", err);
-      mensajeVacio.style.display = "block";
-      mensajeVacio.textContent = "Error al cargar tipos de atención.";
+      if (err.message === "TOKEN_INVALIDO") {
+        // Limpiar almacenamiento y redirigir
+        localStorage.removeItem("token");
+        localStorage.removeItem("usuario");
+        window.location.href = "../index.html";
+      } else {
+        console.error("Error cargando atenciones:", err);
+        mensajeVacio.style.display = "block";
+        mensajeVacio.textContent = "Error al cargar tipos de atención.";
+      }
     }
   }
 

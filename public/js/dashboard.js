@@ -1,3 +1,12 @@
+function verificarTokenInvalido(response) {
+  return response.json().then(data => {
+    if (data.message === "Token inválido") {
+      throw new Error("TOKEN_INVALIDO");
+    }
+    return data;
+  });
+}
+
 // Paso 1: Avisar que estamos listos para recibir el token si venimos redirigidos
 window.opener?.postMessage("READY_FOR_TOKEN", "*"); // Permitimos todos los orígenes al enviar, se valida al recibir
 
@@ -28,16 +37,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Paso 4: Función principal del dashboard
 function iniciarDashboardConToken(token) {
+  // Función mejorada para verificar errores de autenticación
+  const verificarAutenticacion = (response) => {
+    if (response.status === 401) {
+      throw new Error("TOKEN_INVALIDO");
+    }
+    return response.json().then(data => {
+      if (data.message === "Token inválido") {
+        throw new Error("TOKEN_INVALIDO");
+      }
+      return data;
+    });
+  };
+
+  // Manejo centralizado de error de token
+  const manejarErrorToken = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+    window.location.href = "./index.html";
+  };
+
   // Verificar conectividad API/DB
   fetch("https://tickets.dev-wit.com/api/users", {
     headers: {
       "Authorization": `Bearer ${token}`
     }
   })
-    .then((res) => {
-      if (!res.ok) throw new Error("No se pudo conectar a la API");
-      return res.json();
-    })
+    .then(verificarAutenticacion)
     .then((data) => {
       actualizarEstadoSistema("API Conectada", "ok");
       actualizarEstadoSistema("Base de Datos", "ok");
@@ -53,16 +79,20 @@ function iniciarDashboardConToken(token) {
       });
     })
     .catch((err) => {
-      actualizarEstadoSistema("API Conectada", "error");
-      actualizarEstadoSistema("Base de Datos", "error");
-      console.error("Error al cargar usuarios:", err);
+      if (err.message === "TOKEN_INVALIDO") {
+        manejarErrorToken();
+      } else {
+        actualizarEstadoSistema("API Conectada", "error");
+        actualizarEstadoSistema("Base de Datos", "error");
+        console.error("Error al cargar usuarios:", err);
+      }
     });
 
   // Cargar y mostrar cantidad de áreas
   fetch("https://tickets.dev-wit.com/api/areas", {
     headers: { "Authorization": `Bearer ${token}` }
   })
-    .then(res => res.ok ? res.json() : Promise.reject("Error al obtener áreas"))
+    .then(verificarAutenticacion)
     .then(areas => {
       const totalAreas = Array.isArray(areas) ? areas.length : 0;
       const estadisticas = document.querySelectorAll(".card .card-body .d-flex.justify-content-between");
@@ -74,13 +104,19 @@ function iniciarDashboardConToken(token) {
         }
       });
     })
-    .catch(err => console.error("Error al obtener áreas:", err));
+    .catch(err => {
+      if (err.message === "TOKEN_INVALIDO") {
+        manejarErrorToken();
+      } else {
+        console.error("Error al obtener áreas:", err);
+      }
+    });
 
   // Cargar y mostrar cantidad de tipos de atención
   fetch("https://tickets.dev-wit.com/api/tipos", {
     headers: { "Authorization": `Bearer ${token}` }
   })
-    .then(res => res.ok ? res.json() : Promise.reject("Error al obtener tipos"))
+    .then(verificarAutenticacion)
     .then(tipos => {
       const totalTipos = Array.isArray(tipos) ? tipos.length : 0;
       const estadisticas = document.querySelectorAll(".card .card-body .d-flex.justify-content-between");
@@ -92,7 +128,13 @@ function iniciarDashboardConToken(token) {
         }
       });
     })
-    .catch(err => console.error("Error al obtener tipos de atención:", err));
+    .catch(err => {
+      if (err.message === "TOKEN_INVALIDO") {
+        manejarErrorToken();
+      } else {
+        console.error("Error al obtener tipos de atención:", err);
+      }
+    });
 
   // Cargar y mostrar estadísticas de tickets
   obtenerEstadisticasTickets(token)
@@ -126,7 +168,60 @@ function iniciarDashboardConToken(token) {
         }
       });
     })
-    .catch(err => console.error("Error al mostrar estadísticas de tickets:", err));
+    .catch(err => {
+      if (err.message === "TOKEN_INVALIDO") {
+        manejarErrorToken();
+      } else {
+        console.error("Error al mostrar estadísticas de tickets:", err);
+      }
+    });
+}
+
+// Función modificada para manejar el error 401
+async function obtenerEstadisticasTickets(token) {
+  try {
+    const [ticketsRes, estadosRes] = await Promise.all([
+      fetch("https://tickets.dev-wit.com/api/tickets", {
+        headers: { Authorization: `Bearer ${token}` }
+      }),
+      fetch("https://tickets.dev-wit.com/api/estados", {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+    ]);
+
+    if (ticketsRes.status === 401 || estadosRes.status === 401) {
+      throw new Error("TOKEN_INVALIDO");
+    }
+
+    if (!ticketsRes.ok || !estadosRes.ok) throw new Error("Error al obtener datos");
+
+    const tickets = await ticketsRes.json();
+    const estados = await estadosRes.json();
+
+    if (tickets.message === "Token inválido" || estados.message === "Token inválido") {
+      throw new Error("TOKEN_INVALIDO");
+    }
+
+    const estadoMap = Object.fromEntries(estados.map(e => [e.nombre.toLowerCase(), e.id]));
+
+    return {
+      asignado: tickets.filter(t => t.id_estado === estadoMap["asignado"]).length,
+      enEjecucion: tickets.filter(t => t.id_estado === estadoMap["en ejecución"]).length,
+      pendientes: tickets.filter(t =>
+        t.id_estado === estadoMap["pendiente pa"] ||
+        t.id_estado === estadoMap["pendiente pp"]
+      ).length,
+      cancelados: tickets.filter(t => t.id_estado === estadoMap["cancelado"]).length,
+      listos: tickets.filter(t => t.id_estado === estadoMap["listo"]).length,
+      rechazados: tickets.filter(t => t.id_estado === estadoMap["rechazado"]).length
+    };
+  } catch (err) {
+    if (err.message === "TOKEN_INVALIDO") {
+      throw err; // Se manejará en el catch superior
+    }
+    console.error("Error al obtener estadísticas de tickets:", err);
+    return {};
+  }
 }
 
 function actualizarEstadoSistema(texto, estado) {

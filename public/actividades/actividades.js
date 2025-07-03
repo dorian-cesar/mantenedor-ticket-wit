@@ -8,23 +8,40 @@ const modal = new bootstrap.Modal(document.getElementById("modalActividad"))
 
 async function cargarActividadesDesdeAPI() {
   try {
-    const token = localStorage.getItem("token")
-    if (!token) throw new Error("Token no encontrado")
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("TOKEN_INVALIDO");
+    }
 
     const res = await fetch("https://tickets.dev-wit.com/api/actividades", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
+    });
 
-    if (!res.ok) throw new Error("Error al obtener actividades")
+    // Verificar error de autenticación (401 Unauthorized)
+    if (res.status === 401) {
+      throw new Error("TOKEN_INVALIDO");
+    }
 
-    actividades = await res.json()
-    filtrar()
+    if (!res.ok) {
+      throw new Error("Error al obtener actividades");
+    }
+
+    actividades = await res.json();
+    filtrar();
+
   } catch (error) {
-    console.error("Error al cargar actividades:", error)
-    mensajeVacio.textContent = "Error al cargar las actividades"
-    mensajeVacio.style.display = "block"
+    if (error.message === "TOKEN_INVALIDO") {
+      // Limpiar almacenamiento y redirigir al login
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+      window.location.href = "../index.html";
+    } else {
+      console.error("Error al cargar actividades:", error);
+      mensajeVacio.textContent = "Error al cargar las actividades";
+      mensajeVacio.style.display = "block";
+    }
   }
 }
 

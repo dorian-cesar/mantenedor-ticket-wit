@@ -22,32 +22,65 @@ if (!token || !usuario) {
 }
 
 async function cargarTicketsDesdeAPI() {
-  const headers = { Authorization: `Bearer ${token}` };
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("TOKEN_INVALIDO");
+    }
 
-  const [ticketsRes, tiposRes, usuariosRes, estadosRes] = await Promise.all([
-    fetch("https://tickets.dev-wit.com/api/tickets", { headers }),
-    fetch("https://tickets.dev-wit.com/api/tipos", { headers }),
-    fetch("https://tickets.dev-wit.com/api/users", { headers }),
-    fetch("https://tickets.dev-wit.com/api/estados", { headers })
-  ]);
+    const headers = { Authorization: `Bearer ${token}` };
 
-  if (!ticketsRes.ok || !tiposRes.ok || !usuariosRes.ok || !estadosRes.ok) {
-    mostrarError("Error al obtener datos del servidor");
-    return;
+    const [ticketsRes, tiposRes, usuariosRes, estadosRes] = await Promise.all([
+      fetch("https://tickets.dev-wit.com/api/tickets", { headers }),
+      fetch("https://tickets.dev-wit.com/api/tipos", { headers }),
+      fetch("https://tickets.dev-wit.com/api/users", { headers }),
+      fetch("https://tickets.dev-wit.com/api/estados", { headers })
+    ]);
+
+    // Verificar errores 401 en cualquiera de las respuestas
+    if ([ticketsRes, tiposRes, usuariosRes, estadosRes].some(res => res.status === 401)) {
+      throw new Error("TOKEN_INVALIDO");
+    }
+
+    if (!ticketsRes.ok || !tiposRes.ok || !usuariosRes.ok || !estadosRes.ok) {
+      throw new Error("Error al obtener datos del servidor");
+    }
+
+    const [datosTickets, tiposData, usuariosData, estadosData] = await Promise.all([
+      ticketsRes.json(),
+      tiposRes.json(),
+      usuariosRes.json(),
+      estadosRes.json()
+    ]);
+
+    // Verificar mensajes de token inválido en las respuestas
+    if ([datosTickets, tiposData, usuariosData, estadosData].some(data => data.message === "Token inválido")) {
+      throw new Error("TOKEN_INVALIDO");
+    }
+
+    tipos = tiposData;
+    usuarios = usuariosData;
+    estados = estadosData;
+
+    todosLosTickets = datosTickets.map(ticket => enriquecerTicket(ticket));
+    tickets = todosLosTickets
+      .sort((a, b) => new Date(b.fecha_creacion) - new Date(a.fecha_creacion))
+      .slice(0, 200);
+
+    ticketsFiltrados = [...tickets];
+    filtrarTickets();
+
+  } catch (error) {
+    if (error.message === "TOKEN_INVALIDO") {
+      // Limpiar almacenamiento y redirigir
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+      window.location.href = "../index.html";
+    } else {
+      console.error("Error al cargar tickets:", error);
+      mostrarError("Error al obtener datos del servidor");
+    }
   }
-
-  const datosTickets = await ticketsRes.json();
-  tipos = await tiposRes.json();
-  usuarios = await usuariosRes.json();
-  estados = await estadosRes.json();
-
-  todosLosTickets = datosTickets.map(ticket => enriquecerTicket(ticket));
-  tickets = todosLosTickets
-    .sort((a, b) => new Date(b.fecha_creacion) - new Date(a.fecha_creacion))
-    .slice(0, 200);
-
-  ticketsFiltrados = [...tickets];
-  filtrarTickets();
 }
 
 function enriquecerTicket(ticket) {

@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const token = localStorage.getItem("token");
   if (!token) {
     window.location.href = "../index.html";
-  }
+  }  
 
   let usuarios = [];
 
@@ -301,26 +301,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function cargarUsuariosDesdeAPI() {
     if (!token) {      
-      window.location.href = "index.html";
-      return;
+        window.location.href = "index.html";
+        return;
     }
 
     try {
-      const res = await fetch("https://tickets.dev-wit.com/api/users", {
-        headers: {
-          "Authorization": `Bearer ${token}`
+        const res = await fetch("https://tickets.dev-wit.com/api/users", {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        // Manejo centralizado de errores de autenticación (401)
+        if (res.status === 401) {
+            throw new Error("TOKEN_INVALIDO");
         }
-      });
 
-      if (!res.ok) throw new Error(`Error ${res.status}`);
+        if (!res.ok) {
+            throw new Error(`Error ${res.status}`);
+        }
 
-      usuarios = await res.json();
-      renderUsuarios(usuarios);
+        usuarios = await res.json();
+        renderUsuarios(usuarios);
 
     } catch (error) {
-      console.error("Error al cargar usuarios:", error);
-      mensajeVacio.textContent = "Error al cargar usuarios.";
-      mensajeVacio.style.display = "block";
+        if (error.message === "TOKEN_INVALIDO") {
+            // Limpiar datos y redirigir al login
+            localStorage.removeItem("token");
+            localStorage.removeItem("usuario");
+            window.location.href = "../index.html";
+        } else {
+            console.error("Error al cargar usuarios:", error);
+            mensajeVacio.textContent = "Error al cargar usuarios.";
+            mensajeVacio.style.display = "block";
+        }
     }
   }
 

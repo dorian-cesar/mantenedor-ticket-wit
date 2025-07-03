@@ -8,23 +8,40 @@ const modal = new bootstrap.Modal(document.getElementById("modalArea"))
 
 async function cargarAreasDesdeAPI() {
   try {
-    const token = localStorage.getItem("token")
-    if (!token) throw new Error("Token no encontrado")
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("TOKEN_INVALIDO");
+    }
 
     const res = await fetch("https://tickets.dev-wit.com/api/areas", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
+    });
 
-    if (!res.ok) throw new Error("Error al obtener las áreas")
+    // Verificar error de autenticación
+    if (res.status === 401) {
+      throw new Error("TOKEN_INVALIDO");
+    }
 
-    areas = await res.json()
-    filtrar()
+    if (!res.ok) {
+      throw new Error("Error al obtener las áreas");
+    }
+
+    areas = await res.json();
+    filtrar();
+
   } catch (error) {
-    console.error("Error al cargar áreas:", error)
-    mensajeVacio.textContent = "Error al cargar las áreas"
-    mensajeVacio.style.display = "block"
+    if (error.message === "TOKEN_INVALIDO") {
+      // Limpiar almacenamiento y redirigir
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+      window.location.href = "../index.html";
+    } else {
+      console.error("Error al cargar áreas:", error);
+      mensajeVacio.textContent = "Error al cargar las áreas";
+      mensajeVacio.style.display = "block";
+    }
   }
 }
 

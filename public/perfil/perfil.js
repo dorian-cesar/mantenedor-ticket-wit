@@ -1,9 +1,36 @@
-document.addEventListener('DOMContentLoaded', function() {
-    
-  // Obtener usuario desde localStorage
-  const userFromStorage = localStorage.getItem('usuario');
+document.addEventListener('DOMContentLoaded', async function() {
+  // Validación simple del token
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = "/login.html";
+    return;
+  }
+
+  try {
+    // Fetch silencioso para validar token
+    const res = await fetch("https://tickets.dev-wit.com/api/users", {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    // Si es 401, redirigir
+    if (res.status === 401) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('usuario');
+      window.location.href = "../index.html";
+      return;
+    }
+
+    // Verificar si existen datos de usuario en el almacenamiento local
+    const userFromStorage = localStorage.getItem('usuario');
+    if (!userFromStorage) {
+      window.location.href = "../index.html";
+      return;
+    };
 
   let profile;
+  
   if (userFromStorage) {
     const user = JSON.parse(userFromStorage);
     profile = {
@@ -302,4 +329,9 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   init();
+
+  } catch (error) {
+    console.error("Error validando sesión:", error);
+    window.location.href = "../index.html";
+  }
 });

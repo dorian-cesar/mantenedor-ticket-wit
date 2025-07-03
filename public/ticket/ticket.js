@@ -131,7 +131,6 @@ function enriquecerTicket(ticket) {
   };
 }
 
-
 document.querySelectorAll('#statusTabs .nav-link').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('#statusTabs .nav-link').forEach(b => b.classList.remove('active'));
@@ -189,8 +188,6 @@ function filtrarTickets() {
     actualizarPaginacionListos();
   }
 }
-
-
 
 function renderizarTicketsActivos() {
   const tabla = document.getElementById("statusTableBody");
@@ -386,7 +383,6 @@ function mostrarMensajeVacioCerrados(mensaje) {
   }
 }
 
-
 function getBadgeClass(estado) {
   if (!estado) return "bg-secondary";
   const normalized = estado.trim().toLowerCase();
@@ -411,8 +407,7 @@ if (btnActualizar) {
     icono.classList.remove("bi", "bi-arrow-clockwise");
     btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Actualizando...`;
 
-    await cargarTicketsDesdeAPI();
-    searchInput.dispatchEvent(new Event("input"));
+    await cargarTicketsDesdeAPI();    
     showToast("Éxito", "Lista de tickets actualizada.");
 
     setTimeout(() => {

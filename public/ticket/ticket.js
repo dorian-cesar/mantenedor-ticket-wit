@@ -22,6 +22,7 @@ const usuario = JSON.parse(localStorage.getItem("usuario"));
 const tabla = document.getElementById("statusTableBody");
 const mensajeVacio = document.querySelector(".tab-pane.active #mensajeVacio");
 const ticketModal = new bootstrap.Modal(document.getElementById("ticketModal"));
+const registrosPorPagina = 15;
 
 function getSearchInputActivo() {
   const activeTab = document.querySelector(".tab-pane.active")?.id;
@@ -32,10 +33,6 @@ function getSearchInputActivo() {
   }
   return null;
 }
-
-let paginaActual = 1;
-const registrosPorPagina = 15;
-let ticketsFiltrados = [];
 
 if (!token || !usuario) {
   mostrarError("No autorizado. Inicia sesión.");
@@ -300,33 +297,6 @@ function crearFilaTicket(ticket) {
   `;
   row.querySelector(".view-details").addEventListener("click", () => mostrarDetallesTicket(ticket));
   return row;
-}
-
-function actualizarPaginacion() {
-  const totalPaginas = Math.ceil(ticketsFiltrados.length / registrosPorPagina);
-  const paginacionControl = document.getElementById("paginacion-control");
-  paginacionControl.innerHTML = "";
-
-  if (totalPaginas <= 1) return;
-
-  const crearBoton = (text, disabled, onClick) => {
-    const li = document.createElement("li");
-    li.className = `page-item ${disabled ? 'disabled' : ''}`;
-    li.innerHTML = `<a class="page-link" href="#">${text}</a>`;
-    li.addEventListener("click", e => {
-      e.preventDefault();
-      if (!disabled) onClick();
-    });
-    paginacionControl.appendChild(li);
-  };
-
-  crearBoton("&laquo;", paginaActual === 1, () => { paginaActual--; renderizarTickets(); actualizarPaginacion(); });
-
-  for (let i = Math.max(1, paginaActual - 2); i <= Math.min(totalPaginas, paginaActual + 2); i++) {
-    crearBoton(i, i === paginaActual, () => { paginaActual = i; renderizarTickets(); actualizarPaginacion(); });
-  }
-
-  crearBoton("&raquo;", paginaActual === totalPaginas, () => { paginaActual++; renderizarTickets(); actualizarPaginacion(); });
 }
 
 function mostrarDetallesTicket(ticket) {

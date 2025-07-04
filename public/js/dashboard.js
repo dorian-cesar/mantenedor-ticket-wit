@@ -14,7 +14,7 @@ window.opener?.postMessage("READY_FOR_TOKEN", "*"); // Permitimos todos los orí
 window.addEventListener("message", (event) => {
   const origenValido =
     event.origin === "https://ticket-wit.netlify.app" ||
-    event.origin === "https://mesadeayuda.pullman.cl";
+    event.origin === "https://mesa-de-ayuda.dev-wit.com";
 
   if (origenValido && event.data?.type === "token") {
     // Limpiar localStorage y sessionStorage para evitar datos antiguos

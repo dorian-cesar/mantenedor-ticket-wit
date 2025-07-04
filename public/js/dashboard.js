@@ -14,13 +14,20 @@ window.opener?.postMessage("READY_FOR_TOKEN", "*"); // Permitimos todos los orí
 window.addEventListener("message", (event) => {
   const origenValido =
     event.origin === "https://ticket-wit.netlify.app" ||
-    event.origin === "https://mesa-de-ayuda.dev-wit.com";
+    event.origin === "https://mesadeayuda.pullman.cl";
 
   if (origenValido && event.data?.type === "token") {
+    // Limpiar localStorage y sessionStorage para evitar datos antiguos
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Establecer nuevos datos
     localStorage.setItem("token", event.data.token);
     localStorage.setItem("usuario", JSON.stringify(event.data.usuario));
-    console.log("Token y usuario recibidos vía postMessage");
-    location.reload(); // Recargar para que se inicie el dashboard normalmente
+
+    console.log("Token y usuario actualizados vía postMessage");
+
+    location.reload(); // Recargar para iniciar dashboard normalmente
   }
 });
 

@@ -5,6 +5,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }  
 
   let usuarios = [];
+  let usuariosFiltrados = [];
+  let paginaActualUsuarios = 1;
+  const registrosPorPaginaUsuarios = 15;
+
 
   const tablaUsuarios = document.getElementById("tablaUsuarios");
   const searchInput = document.getElementById("searchInput");
@@ -12,10 +16,16 @@ document.addEventListener("DOMContentLoaded", () => {
  
 
   function renderUsuarios(data) {
-  const currentUser = JSON.parse(localStorage.getItem("usuario"));
-  tablaUsuarios.innerHTML = "";
-    if (data.length === 0) {
+    const currentUser = JSON.parse(localStorage.getItem("usuario"));
+    const inicio = (paginaActualUsuarios - 1) * registrosPorPaginaUsuarios;
+    const fin = inicio + registrosPorPaginaUsuarios;
+    const usuariosPagina = data.slice(inicio, fin);
+
+    tablaUsuarios.innerHTML = "";
+
+    if (usuariosPagina.length === 0) {
       mensajeVacio.style.display = "block";
+      document.getElementById("paginacion-info-usuarios").textContent = "Mostrando 0 de 0 usuarios";
       return;
     } else {
       mensajeVacio.style.display = "none";
@@ -28,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    data.forEach(usuario => {
+    usuariosPagina.forEach(usuario => {
       if (!usuario || !usuario.nombre || !usuario.email || !usuario.rol) return;
 
       const fila = document.createElement("tr");
@@ -55,7 +65,10 @@ document.addEventListener("DOMContentLoaded", () => {
         </td>
       `;
       tablaUsuarios.appendChild(fila);
-    });      
+    });
+
+    document.getElementById("paginacion-info-usuarios").textContent = `Mostrando ${usuariosPagina.length} de ${data.length} usuarios`;
+    actualizarPaginacionUsuarios(data);      
 
     document.querySelectorAll(".btn-editar").forEach(btn => {
       btn.addEventListener("click", async () => {
@@ -165,14 +178,53 @@ document.addEventListener("DOMContentLoaded", () => {
   });  
 
   searchInput.addEventListener("input", () => {
-    const term = searchInput.value.toLowerCase();
-    const filtrados = usuarios.filter(u =>
+    const term = searchInput.value.toLowerCase().trim();
+    usuariosFiltrados = usuarios.filter(u =>
       (u.nombre || "").toLowerCase().includes(term) ||
       (u.email || "").toLowerCase().includes(term) ||
       (u.rol || "").toLowerCase().includes(term)
     );
-    renderUsuarios(filtrados);
+
+    paginaActualUsuarios = 1;
+    renderUsuarios(usuariosFiltrados);
   });
+
+  function actualizarPaginacionUsuarios(data) {
+    const totalPaginas = Math.ceil(data.length / registrosPorPaginaUsuarios);
+    const contenedor = document.getElementById("paginacion-control-usuarios");
+    contenedor.innerHTML = "";
+
+    if (totalPaginas <= 1) return;
+
+    const crearBoton = (texto, deshabilitado, click) => {
+      const li = document.createElement("li");
+      li.className = `page-item ${deshabilitado ? "disabled" : ""}`;
+      li.innerHTML = `<a class="page-link" href="#">${texto}</a>`;
+      li.addEventListener("click", e => {
+        e.preventDefault();
+        if (!deshabilitado) click();
+      });
+      contenedor.appendChild(li);
+    };
+
+    crearBoton("«", paginaActualUsuarios === 1, () => {
+      paginaActualUsuarios--;
+      renderUsuarios(data);
+    });
+
+    for (let i = 1; i <= totalPaginas; i++) {
+      crearBoton(i, i === paginaActualUsuarios, () => {
+        paginaActualUsuarios = i;
+        renderUsuarios(data);
+      });
+    }
+
+    crearBoton("»", paginaActualUsuarios === totalPaginas, () => {
+      paginaActualUsuarios++;
+      renderUsuarios(data);
+    });
+  }
+
 
   document.getElementById("formUsuario").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -324,7 +376,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         usuarios = await res.json();
-        renderUsuarios(usuarios);
+        usuariosFiltrados = [...usuarios];
+        paginaActualUsuarios = 1;
+        renderUsuarios(usuariosFiltrados);
+
 
     } catch (error) {
         if (error.message === "TOKEN_INVALIDO") {

@@ -96,13 +96,13 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('tema').value = profile.tema;
     
     // Notifications
-    document.getElementById('notificacionesEmail').checked = profile.notificacionesEmail;
-    document.getElementById('notificacionesPush').checked = profile.notificacionesPush;
-    document.getElementById('notificacionesSMS').checked = profile.notificacionesSMS;
-    document.getElementById('frecuenciaNotificaciones').value = profile.frecuenciaNotificaciones;
-    document.getElementById('notificarTicketsAsignados').checked = profile.notificarTicketsAsignados;
-    document.getElementById('notificarTicketsVencidos').checked = profile.notificarTicketsVencidos;
-    document.getElementById('notificarMenciones').checked = profile.notificarMenciones;    
+    // document.getElementById('notificacionesEmail').checked = profile.notificacionesEmail;
+    // document.getElementById('notificacionesPush').checked = profile.notificacionesPush;
+    // document.getElementById('notificacionesSMS').checked = profile.notificacionesSMS;
+    // document.getElementById('frecuenciaNotificaciones').value = profile.frecuenciaNotificaciones;
+    // document.getElementById('notificarTicketsAsignados').checked = profile.notificarTicketsAsignados;
+    // document.getElementById('notificarTicketsVencidos').checked = profile.notificarTicketsVencidos;
+    // document.getElementById('notificarMenciones').checked = profile.notificarMenciones;    
     
     
     // Profile header

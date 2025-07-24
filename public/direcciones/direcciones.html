@@ -24,8 +24,8 @@
           <button class="btn btn-outline-secondary" id="btn-actualizar">
             <i class="bi bi-arrow-clockwise me-1"></i>Actualizar
           </button>
-          <button id="btnNuevaActividad" class="btn btn-dark">
-            <i class="bi bi-plus me-2"></i>Nueva Actividad
+          <button id="btnNuevaDireccion" class="btn btn-dark">
+            <i class="bi bi-plus me-2"></i>Nueva Dirección
           </button>
         </div>
       </div>    
@@ -39,43 +39,39 @@
           <table class="table table-bordered table-hover">
             <thead class="table-light">
               <tr>
-                <th>#</th>
+                <th>ID</th>
                 <th>Nombre</th>   
-                <th>Tipo atención</th>                              
+                <th>Ubicación</th>                              
                 <th style="width: 10%;">Acciones</th>
               </tr>
             </thead>
-            <tbody id="tablaActividad"></tbody>
+            <tbody id="tablaDireccion"></tbody>
           </table>
-          <nav id="paginacionActividad"></nav>
+          <nav id="paginacionDireccion"></nav>
         </div>
-        <div id="mensajeVacio" class="text-center text-muted" style="display: none;">No se encontraron actividades</div>
+        <div id="mensajeVacio" class="text-center text-muted" style="display: none;">No se encontraron direcciones</div>
       </div>
     </div>
 
     <!-- Modal Área -->
-    <div class="modal fade" id="modalActividad" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="modalDireccion" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
-          <form id="formActividad">
+          <form id="formDireccion">
             <div class="modal-header">
-              <h5 class="modal-title" id="modalActividadLabel">Crear Actividad</h5>
+              <h5 class="modal-title" id="modalDireccionLabel">Crear Dirección</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
               <div class="mb-3">
-                <label for="nombre" class="form-label">Nombre</label>
-                <input type="text" id="nombre" class="form-control" required>
-              </div>              
-            </div>
-            <div class="modal-body">
-              <div class="mb-3">
-                <label for="tipoAtencion" class="form-label">Tipo de Atención</label>
-                <select id="tipoAtencion" class="form-select" required>
-                  <option value="">Seleccione un tipo</option>
-                </select>
-              </div>
-            </div>  
+                    <label for="name" class="form-label">Nombre</label>
+                    <input type="text" id="name" class="form-control" required>                                        
+              </div> 
+              <div class="mb-3">                 
+                    <label for="name" class="form-label">Ubicación</label>
+                    <input type="text" id="ubicacion" class="form-control" required>
+              </div>             
+            </div>            
             <div class="modal-footer">
               <button type="submit" class="btn btn-primary">Guardar</button>
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -86,28 +82,28 @@
     </div>
   </div>
   <!-- Modal para eliminar área -->
-    <div class="modal fade" id="modalEliminarActividad" tabindex="-1" aria-labelledby="modalEliminarActividadLabel" aria-hidden="true">
+    <div class="modal fade" id="modalEliminarDireccion" tabindex="-1" aria-labelledby="modalEliminarDireccionLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-        <form id="formEliminarActividad">
+        <form id="formEliminarDireccion">
             <div class="modal-header">
-            <h5 class="modal-title" id="modalEliminarActividadLabel">Eliminar Actividad</h5>
+            <h5 class="modal-title" id="modalEliminarDireccionLabel">Eliminar Dirección</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
-            <input type="hidden" id="eliminarActividadId">
-            <p>¿Estás seguro de que deseas eliminar esta área? Esta acción es irreversible.</p>
+            <input type="hidden" id="eliminarDireccionId">
+            <p>¿Estás seguro de que deseas eliminar esta dirección? Esta acción es irreversible.</p>
             <div class="mb-3">
-                <label for="passwordEliminarActividad" class="form-label">Ingresa tu contraseña para confirmar:</label>
-                <input type="password" class="form-control" id="passwordEliminarActividad" required>
+                <label for="passwordEliminarDireccion" class="form-label">Ingresa tu contraseña para confirmar:</label>
+                <input type="password" class="form-control" id="passwordEliminarDireccion" required>
             </div>
             <div class="toast-container toast-center">
-                <div id="toastEliminarActividadError" class="toast align-items-center text-bg-danger border-0 show" role="alert" style="display: none;">
+                <div id="toastEliminarDireccionError" class="toast align-items-center text-bg-danger border-0 show" role="alert" style="display: none;">
                 <div class="d-flex">
                     <div class="toast-body">
-                    No se pudo eliminar el área. Verifica tu contraseña.
+                    No se pudo eliminar la dirección. Verifica tu contraseña.
                     </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="document.getElementById('toastEliminarActividadError').style.display='none'" aria-label="Cerrar"></button>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="document.getElementById('toastEliminarDireccionError').style.display='none'" aria-label="Cerrar"></button>
                 </div>
                 </div>
             </div>
@@ -137,6 +133,6 @@
     });
   </script> 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="actividades.js"></script>
+  <script src="direcciones.js"></script>
 </body>
 </html>

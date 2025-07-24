@@ -57,7 +57,7 @@ function renderTabla(filtradas) {
   filtradas.forEach((categoria, index) => {
     const tr = document.createElement("tr")
     tr.innerHTML = `
-      <td>${index + 1}</td>
+      <td>${categoria.id}</td> 
       <td>${categoria.nombre}</td>    
       <td class="text-center">
         <div class="d-inline-flex gap-2">

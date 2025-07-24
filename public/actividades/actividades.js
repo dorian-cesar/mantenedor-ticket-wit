@@ -1,5 +1,10 @@
 let actividades = []
 let editingActividad = null
+let mapaTiposAtencion = {};
+let paginaActual = 1;
+const registrosPorPagina = 15;
+let actividadesFiltradas = [];
+
 
 const tabla = document.getElementById("tablaActividad")
 const searchInput = document.getElementById("searchInput")
@@ -9,31 +14,23 @@ const modal = new bootstrap.Modal(document.getElementById("modalActividad"))
 async function cargarActividadesDesdeAPI() {
   try {
     const token = localStorage.getItem("token");
-    if (!token) {
-      throw new Error("TOKEN_INVALIDO");
-    }
+    if (!token) throw new Error("TOKEN_INVALIDO");
+
+    // Primero cargar tipos y mapa
+    await cargarTiposAtencion();
 
     const res = await fetch("https://tickets.dev-wit.com/api/actividades", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
 
-    // Verificar error de autenticación (401 Unauthorized)
-    if (res.status === 401) {
-      throw new Error("TOKEN_INVALIDO");
-    }
-
-    if (!res.ok) {
-      throw new Error("Error al obtener actividades");
-    }
+    if (res.status === 401) throw new Error("TOKEN_INVALIDO");
+    if (!res.ok) throw new Error("Error al obtener actividades");
 
     actividades = await res.json();
     filtrar();
 
   } catch (error) {
     if (error.message === "TOKEN_INVALIDO") {
-      // Limpiar almacenamiento y redirigir al login
       localStorage.removeItem("token");
       localStorage.removeItem("usuario");
       window.location.href = "../index.html";
@@ -45,20 +42,91 @@ async function cargarActividadesDesdeAPI() {
   }
 }
 
-function renderTabla(filtradas) {
+async function cargarTiposAtencion(seleccionado = "") {
+  const token = localStorage.getItem("token");
+  const select = document.getElementById("tipoAtencion");
+
+  select.innerHTML = '<option value="">Cargando tipos...</option>';
+
+  try {
+    const res = await fetch("https://tickets.dev-wit.com/api/tipos", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const tipos = await res.json();
+
+    // Crear el mapa id → nombre
+    mapaTiposAtencion = {};
+    tipos.forEach((tipo) => {
+      mapaTiposAtencion[tipo.id] = tipo.nombre;
+    });
+
+    // Poblamos el select
+    select.innerHTML = '<option value="">Seleccione un tipo</option>';
+    tipos.forEach((tipo) => {
+      const option = document.createElement("option");
+      option.value = tipo.id;
+      option.textContent = tipo.nombre;
+      if (String(tipo.id) === String(seleccionado)) option.selected = true;
+      select.appendChild(option);
+    });
+  } catch (error) {
+    console.error("Error al cargar tipos de atención:", error);
+    select.innerHTML = '<option value="">Error al cargar</option>';
+  }
+}
+
+function renderPaginacion(totalPaginas) {
+  const paginacion = document.getElementById("paginacionActividad");
+  paginacion.innerHTML = "";
+
+  if (totalPaginas <= 1) return;
+
+  const ul = document.createElement("ul");
+  ul.className = "pagination justify-content-center mt-3";
+
+  for (let i = 1; i <= totalPaginas; i++) {
+    const li = document.createElement("li");
+    li.className = `page-item ${i === paginaActual ? "active" : ""}`;
+    const a = document.createElement("a");
+    a.className = "page-link";
+    a.href = "#";
+    a.textContent = i;
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      paginaActual = i;
+      renderTabla();
+    });
+    li.appendChild(a);
+    ul.appendChild(li);
+  }
+
+  paginacion.appendChild(ul);
+}
+
+
+function renderTabla() {
   tabla.innerHTML = "";
-  if (filtradas.length === 0) {
+
+  const total = actividadesFiltradas.length;
+  if (total === 0) {
     mensajeVacio.style.display = "block";
+    renderPaginacion(0); // limpiar controles de paginación
     return;
   }
+
   mensajeVacio.style.display = "none";
 
-  filtradas.forEach((actividad, index) => {
+  const inicio = (paginaActual - 1) * registrosPorPagina;
+  const fin = inicio + registrosPorPagina;
+  const actividadesPagina = actividadesFiltradas.slice(inicio, fin);
+
+  actividadesPagina.forEach((actividad, index) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${index + 1}</td>
+      <td>${inicio + index + 1}</td>
       <td>${actividad.nombre}</td>  
-      <td>${actividad.tipo_atencion_id}</td>     
+      <td>${mapaTiposAtencion[actividad.tipo_atencion_id] || "Sin tipo"}</td>    
       <td class="text-center">
         <div class="d-inline-flex gap-2">
           <button class="btn btn-sm btn-outline-primary me-2" onclick="editarActividad(${actividad.id})">
@@ -72,30 +140,39 @@ function renderTabla(filtradas) {
     `;
     tabla.appendChild(tr);
   });
+
+  renderPaginacion(Math.ceil(total / registrosPorPagina));
 }
 
-
 function filtrar() {
-  const term = searchInput.value.toLowerCase()
-  const resultado = actividades.filter(
-    (a) => a.nombre.toLowerCase().includes(term)
-  )
-  renderTabla(resultado)
+  const term = searchInput.value.toLowerCase();
+  actividadesFiltradas = actividades.filter((a) =>
+    a.nombre.toLowerCase().includes(term)
+  );
+  paginaActual = 1; 
+  renderTabla();
 }
 
 document.getElementById("btnNuevaActividad").addEventListener("click", () => {
-  editingActividad = null
-  document.getElementById("formActividad").reset()
-  document.getElementById("modalActividadLabel").textContent = "Crear Actividad"
-  modal.show()
-})
+  editingActividad = null;
+  document.getElementById("formActividad").reset();
+  document.getElementById("modalActividadLabel").textContent = "Crear Actividad";
+
+  cargarTiposAtencion().then(() => {
+    modal.show();
+  });
+});
+
 
 document.getElementById("formActividad").addEventListener("submit", async (e) => {
-  e.preventDefault()
-  const nombre = document.getElementById("nombre").value.trim()
-  const token = localStorage.getItem("token")
+  e.preventDefault();
+  const nombre = document.getElementById("nombre").value.trim();
+  const tipo_atencion_id = document.getElementById("tipoAtencion").value;
+  const token = localStorage.getItem("token");
 
   try {
+    const payload = JSON.stringify({ nombre, tipo_atencion_id });
+
     if (editingActividad) {
       const res = await fetch(`https://tickets.dev-wit.com/api/actividades/${editingActividad.id}`, {
         method: "PUT",
@@ -103,13 +180,11 @@ document.getElementById("formActividad").addEventListener("submit", async (e) =>
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ nombre }),
-      })
-      showToast("Éxito", "Actividad editada correctamente"); 
+        body: payload,
+      });
+      showToast("Éxito", "Actividad editada correctamente");
 
-      if (!res.ok) throw new Error("Error al actualizar la actividad")
-
-      await cargarActividadesDesdeAPI()
+      if (!res.ok) throw new Error("Error al actualizar la actividad");
     } else {
       const res = await fetch("https://tickets.dev-wit.com/api/actividades", {
         method: "POST",
@@ -117,29 +192,31 @@ document.getElementById("formActividad").addEventListener("submit", async (e) =>
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ nombre }),
-      })
-      showToast("Éxito", "Actividad creada correctamente"); 
+        body: payload,
+      });
+      showToast("Éxito", "Actividad creada correctamente");
 
-      if (!res.ok) throw new Error("Error al crear la actividad")
-
-      await cargarActividadesDesdeAPI()
+      if (!res.ok) throw new Error("Error al crear la actividad");
     }
 
-    modal.hide()
+    await cargarActividadesDesdeAPI();
+    modal.hide();
+    e.target.reset();
   } catch (error) {
-    console.error(error)
-    alert("Ocurrió un error al guardar la actividad")
+    console.error(error);
+    alert("Ocurrió un error al guardar la actividad");
   }
-})
+});
 
 function editarActividad(id) {
-  const actividad = actividades.find((a) => a.id === id)
-  if (!actividad) return
-  editingActividad = actividad
-  document.getElementById("nombre").value = actividad.nombre  
-  document.getElementById("modalActividadLabel").textContent = "Editar Actividad"
-  modal.show()
+  const actividad = actividades.find((a) => a.id === id);
+  if (!actividad) return;
+
+  editingActividad = actividad;
+  document.getElementById("nombre").value = actividad.nombre;
+  document.getElementById("modalActividadLabel").textContent = "Editar Actividad";
+
+  cargarTiposAtencion(actividad.tipo_atencion_id).then(() => modal.show());
 }
 
 function eliminarActividad(id) {
@@ -199,9 +276,11 @@ document.getElementById("formEliminarActividad").addEventListener("submit", asyn
 
 searchInput.addEventListener("input", filtrar)
 
-window.onload = () => {
-  cargarActividadesDesdeAPI()
-}
+window.onload = async () => {
+  await cargarActividadesDesdeAPI();
+  filtrar();
+};
+
 
 // Botón actualizar
 const btnActualizar = document.getElementById("btn-actualizar");

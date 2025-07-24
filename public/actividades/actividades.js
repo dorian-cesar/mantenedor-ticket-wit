@@ -57,7 +57,8 @@ function renderTabla(filtradas) {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${index + 1}</td>
-      <td>${actividad.nombre}</td>      
+      <td>${actividad.nombre}</td>  
+      <td>${actividad.tipo_atencion_id}</td>     
       <td class="text-center">
         <div class="d-inline-flex gap-2">
           <button class="btn btn-sm btn-outline-primary me-2" onclick="editarActividad(${actividad.id})">

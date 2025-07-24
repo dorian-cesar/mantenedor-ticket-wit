@@ -11,108 +11,99 @@
 <body class="bg-light">
   <div id="navbar-container"></div>
   <div class="container py-5">
-    <div class="mb-4">
-      <h1 class="mt-3 fw-bold">Gestión de Direcciones</h1>
-      <p class="text-muted">Administra las direcciones de terminales y oficinas</p>
-    </div>
-
-    <div class="card">
-
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Lista de Direcciones</h5>
-        <div class="d-flex gap-2 ms-auto">
-          <button class="btn btn-outline-secondary" id="btn-actualizar">
-            <i class="bi bi-arrow-clockwise me-1"></i>Actualizar
-          </button>
-          <button id="btnNuevaDireccion" class="btn btn-dark">
-            <i class="bi bi-plus me-2"></i>Nueva Dirección
-          </button>
+        <div class="mb-4">
+        <h1 class="mt-3 fw-bold">Gestión de Direcciones</h1>
+        <p class="text-muted">Administra las direcciones de terminales y oficinas</p>
         </div>
-      </div>    
 
-      <div class="card-body">
-        <div class="mb-3 position-relative">
-          <i class="bi bi-search position-absolute top-50 translate-middle-y ms-3"></i>
-          <input type="text" class="form-control ps-5" id="searchInput" placeholder="Buscar por nombre...">
-        </div>
-        <div class="table-responsive">
-          <table class="table table-bordered table-hover">
-            <thead class="table-light">
-              <tr>
-                <th>ID</th>
-                <th>Nombre</th>   
-                <th>Ubicación</th>                              
-                <th style="width: 10%;">Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="tablaDireccion"></tbody>
-          </table>
-          <nav id="paginacionDireccion"></nav>
-        </div>
-        <div id="mensajeVacio" class="text-center text-muted" style="display: none;">No se encontraron direcciones</div>
-      </div>
-    </div>
+        <div class="card">
 
-    <!-- Modal Área -->
-    <div class="modal fade" id="modalDireccion" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <form id="formDireccion">
-            <div class="modal-header">
-              <h5 class="modal-title" id="modalDireccionLabel">Crear Dirección</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Lista de Direcciones</h5>
+            <div class="d-flex gap-2 ms-auto">
+            <button class="btn btn-outline-secondary" id="btn-actualizar">
+                <i class="bi bi-arrow-clockwise me-1"></i>Actualizar
+            </button>
+            <button id="btnNuevaDireccion" class="btn btn-dark">
+                <i class="bi bi-plus me-2"></i>Nueva Dirección
+            </button>
             </div>
-            <div class="modal-body">
-              <div class="mb-3">
-                    <label for="name" class="form-label">Nombre</label>
-                    <input type="text" id="name" class="form-control" required>                                        
-              </div> 
-              <div class="mb-3">                 
-                    <label for="name" class="form-label">Ubicación</label>
-                    <input type="text" id="ubicacion" class="form-control" required>
-              </div>             
-            </div>            
-            <div class="modal-footer">
-              <button type="submit" class="btn btn-primary">Guardar</button>
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>    
+
+        <div class="card-body">
+            <div class="mb-3 position-relative">
+            <i class="bi bi-search position-absolute top-50 translate-middle-y ms-3"></i>
+            <input type="text" class="form-control ps-5" id="searchInput" placeholder="Buscar por nombre...">
             </div>
-          </form>
+            <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>   
+                    <th>Ubicación</th>                              
+                    <th style="width: 10%;">Acciones</th>
+                </tr>
+                </thead>
+                <tbody id="tablaDireccion"></tbody>
+            </table>
+            <nav id="paginacionDireccion"></nav>
+            </div>
+            <div id="mensajeVacio" class="text-center text-muted" style="display: none;">No se encontraron direcciones</div>
         </div>
-      </div>
-    </div>
-  </div>
-  <!-- Modal para eliminar área -->
-    <div class="modal fade" id="modalEliminarDireccion" tabindex="-1" aria-labelledby="modalEliminarDireccionLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-        <form id="formEliminarDireccion">
-            <div class="modal-header">
-            <h5 class="modal-title" id="modalEliminarDireccionLabel">Eliminar Dirección</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div class="modal-body">
-            <input type="hidden" id="eliminarDireccionId">
-            <p>¿Estás seguro de que deseas eliminar esta dirección? Esta acción es irreversible.</p>
-            <div class="mb-3">
-                <label for="passwordEliminarDireccion" class="form-label">Ingresa tu contraseña para confirmar:</label>
-                <input type="password" class="form-control" id="passwordEliminarDireccion" required>
-            </div>
-            <div class="toast-container toast-center">
-                <div id="toastEliminarDireccionError" class="toast align-items-center text-bg-danger border-0 show" role="alert" style="display: none;">
-                <div class="d-flex">
-                    <div class="toast-body">
-                    No se pudo eliminar la dirección. Verifica tu contraseña.
+        </div>
+
+        <!-- Modal Área -->
+        <div class="modal fade" id="modalDireccion" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <form id="formDireccion">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="modalDireccionLabel">Crear Dirección</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="document.getElementById('toastEliminarDireccionError').style.display='none'" aria-label="Cerrar"></button>
+                    <div class="modal-body">
+                    <div class="mb-3">
+                            <label for="name" class="form-label">Nombre</label>
+                            <input type="text" id="name" class="form-control" required>                                        
+                    </div> 
+                    <div class="mb-3">                 
+                            <label for="name" class="form-label">Ubicación</label>
+                            <input type="text" id="ubicacion" class="form-control" required>
+                    </div>             
+                    </div>            
+                    <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>  
+    <!-- Modal para eliminar área -->
+    <div class="modal fade" id="modalEliminarDireccion" tabindex="-1" aria-labelledby="modalEliminarDireccionLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <form id="formEliminarDireccion">
+                <div class="modal-header">
+                <h5 class="modal-title" id="modalEliminarDireccionLabel">Eliminar Dirección</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                <input type="hidden" id="eliminarDireccionId">
+                <p>¿Estás seguro de que deseas eliminar esta dirección? Esta acción es irreversible.</p>
+                <div class="mb-3">
+                    <label for="passwordEliminarDireccion" class="form-label">Ingresa tu contraseña para confirmar:</label>
+                    <input type="password" class="form-control" id="passwordEliminarDireccion" required>
                 </div>
                 </div>
+                <div class="modal-footer">
+                <button type="submit" class="btn btn-danger">Eliminar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </form>
             </div>
-            </div>
-            <div class="modal-footer">
-            <button type="submit" class="btn btn-danger">Eliminar</button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            </div>
-        </form>
         </div>
     </div>
     </div>

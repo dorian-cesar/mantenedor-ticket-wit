@@ -194,7 +194,7 @@ document.getElementById("formEliminarDireccion").addEventListener("submit", asyn
   const token = localStorage.getItem("token")
 
   if (!password || !email) {
-    document.getElementById("toastEliminarDireccionError").style.display = 'block'
+    showToast("Error", "Debes ingresar tu contraseña", true);
     return
   }
 
@@ -218,18 +218,18 @@ document.getElementById("formEliminarDireccion").addEventListener("submit", asyn
       },
       body: JSON.stringify({ password })
     })
-    showToast("Éxito", "Dirección eliminada correctamente");
 
     if (!res.ok) {
       showToast("Error", "Hubo un problema al eliminar", true);
       return
     }
 
+    showToast("Éxito", "Dirección eliminada correctamente");
     await cargarDireccionesDesdeAPI()
     bootstrap.Modal.getInstance(document.getElementById("modalEliminarDireccion")).hide()
   } catch (error) {
     console.error("Error al eliminar dirección:", error)
-    document.getElementById("toastEliminarDireccionError").style.display = 'block'
+    showToast("Error", "Ocurrió un error al eliminar la dirección", true);
   }
 })
 

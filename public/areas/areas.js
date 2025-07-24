@@ -55,7 +55,7 @@ function renderTabla(filtradas) {
   filtradas.forEach((area, index) => {
     const tr = document.createElement("tr")
     tr.innerHTML = `
-      <td>${index + 1}</td>
+      <td>${area.id}</td> 
       <td>${area.nombre}</td>     
       <td class="text-center">
         <div class="d-inline-flex gap-2">

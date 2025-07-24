@@ -289,7 +289,7 @@ function crearFilaTicket(ticket) {
         <button class="btn btn-sm btn-outline-primary" onclick="editarEstado()">
           <i class="bi bi-pencil"></i>
         </button>
-        <button class="btn btn-sm btn-outline-danger" onclick="eliminarEstado()">
+        <button class="btn btn-sm btn-outline-danger" onclick="eliminarTicket(${ticket.id})">
           <i class="bi bi-trash"></i>
         </button>
       </div>
@@ -364,6 +364,61 @@ function getBadgeClass(estado) {
   if (normalized === "rechazado") return "badge-estado-rechazado";
   return "bg-secondary";
 }
+
+function eliminarTicket(id) {
+  document.getElementById("eliminarTicketId").value = id;
+  document.getElementById("passwordEliminarTicket").value = "";
+  new bootstrap.Modal(document.getElementById("modalEliminarTicket")).show();
+}
+
+document.getElementById("formEliminarTicket").addEventListener("submit", async (e) => {
+  e.preventDefault()
+
+  const id = parseInt(document.getElementById("eliminarTicketId").value)
+  const password = document.getElementById("passwordEliminarTicket").value.trim()
+  const currentUser = JSON.parse(localStorage.getItem("usuario"))
+  const email = currentUser?.email
+  const token = localStorage.getItem("token")
+
+  if (!password || !email) {
+    showToast("Error", "Debes ingresar tu contraseña", true);
+    return
+  }
+
+  try {
+    const loginRes = await fetch("https://tickets.dev-wit.com/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    })
+
+    if (!loginRes.ok) {
+      showToast("Error", "Contraseña incorrecta", true); 
+      return
+    }
+
+    const res = await fetch(`https://tickets.dev-wit.com/api/tickets/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ password })
+    })
+
+    if (!res.ok) {
+      showToast("Error", "Hubo un problema al eliminar", true);
+      return
+    }
+
+    showToast("Éxito", "Ticket eliminado correctamente");
+    await cargarTicketsDesdeAPI()
+    bootstrap.Modal.getInstance(document.getElementById("modalEliminarTicket")).hide()
+  } catch (error) {
+    console.error("Error al eliminar ticket:", error)
+    showToast("Error", "Ocurrió un error al eliminar ticket", true);
+  }
+})
 
 const btnActualizar = document.getElementById("btn-actualizar");
 if (btnActualizar) {

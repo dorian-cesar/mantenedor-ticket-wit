@@ -149,6 +149,32 @@
     </div>
   </div>
 
+  <!-- Modal para eliminar área -->
+  <div class="modal fade" id="modalEliminarTicket" tabindex="-1" aria-labelledby="modalEliminarTicketLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+          <form id="formEliminarTicket">
+              <div class="modal-header">
+              <h5 class="modal-title" id="modalEliminarTicketLabel">Eliminar Ticket</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+              </div>
+              <div class="modal-body">
+              <input type="hidden" id="eliminarTicketId">
+              <p>¿Estás seguro de que deseas eliminar esta ticket? Esta acción es irreversible.</p>
+              <div class="mb-3">
+                  <label for="passwordEliminarTicket" class="form-label">Ingresa tu contraseña para confirmar:</label>
+                  <input type="password" class="form-control" id="passwordEliminarTicket" required>
+              </div>
+              </div>
+              <div class="modal-footer">
+              <button type="submit" class="btn btn-danger">Eliminar</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+          </form>
+          </div>
+      </div>
+  </div>
+
   <!-- Modal Detalles Ticket -->
   <div class="modal fade" id="ticketModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">

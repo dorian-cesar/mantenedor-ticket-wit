@@ -124,7 +124,7 @@ function renderTabla() {
   actividadesPagina.forEach((actividad, index) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${inicio + index + 1}</td>
+      <td>${actividad.id}</td>
       <td>${actividad.nombre}</td>  
       <td>${mapaTiposAtencion[actividad.tipo_atencion_id] || "Sin tipo"}</td>    
       <td class="text-center">

@@ -23,6 +23,7 @@ const tabla = document.getElementById("statusTableBody");
 const mensajeVacio = document.querySelector(".tab-pane.active #mensajeVacio");
 const ticketModal = new bootstrap.Modal(document.getElementById("ticketModal"));
 const registrosPorPagina = 15;
+const modal = new bootstrap.Modal(document.getElementById("modalTicket"))
 
 function getSearchInputActivo() {
   const activeTab = document.querySelector(".tab-pane.active")?.id;
@@ -49,37 +50,40 @@ async function cargarTicketsDesdeAPI() {
 
     const headers = { Authorization: `Bearer ${token}` };
 
-    const [ticketsRes, tiposRes, usuariosRes, estadosRes] = await Promise.all([
+    const [ticketsRes, tiposRes, usuariosRes, estadosRes, direccionesRes] = await Promise.all([
       fetch("https://tickets.dev-wit.com/api/tickets", { headers }),
       fetch("https://tickets.dev-wit.com/api/tipos", { headers }),
       fetch("https://tickets.dev-wit.com/api/users", { headers }),
-      fetch("https://tickets.dev-wit.com/api/estados", { headers })
+      fetch("https://tickets.dev-wit.com/api/estados", { headers }),
+      fetch("https://tickets.dev-wit.com/api/direcciones", { headers })
     ]);
 
     // Verificar errores 401 en cualquiera de las respuestas
-    if ([ticketsRes, tiposRes, usuariosRes, estadosRes].some(res => res.status === 401)) {
+    if ([ticketsRes, tiposRes, usuariosRes, estadosRes, direccionesRes].some(res => res.status === 401)) {
       throw new Error("TOKEN_INVALIDO");
     }
 
-    if (!ticketsRes.ok || !tiposRes.ok || !usuariosRes.ok || !estadosRes.ok) {
+    if (!ticketsRes.ok || !tiposRes.ok || !usuariosRes.ok || !estadosRes.ok || !direccionesRes.ok) {
       throw new Error("Error al obtener datos del servidor");
     }
 
-    const [datosTickets, tiposData, usuariosData, estadosData] = await Promise.all([
+    const [datosTickets, tiposData, usuariosData, estadosData, direccionesData] = await Promise.all([
       ticketsRes.json(),
       tiposRes.json(),
       usuariosRes.json(),
-      estadosRes.json()
+      estadosRes.json(),
+      direccionesRes.json()
     ]);
 
     // Verificar mensajes de token inválido en las respuestas
-    if ([datosTickets, tiposData, usuariosData, estadosData].some(data => data.message === "Token inválido")) {
+    if ([datosTickets, tiposData, usuariosData, estadosData, direccionesData].some(data => data.message === "Token inválido")) {
       throw new Error("TOKEN_INVALIDO");
     }
 
     tipos = tiposData;
     usuarios = usuariosData;
     estados = estadosData;
+    direcciones = direccionesData;
 
     todosLosTickets = datosTickets.map(ticket => enriquecerTicket(ticket));
     tickets = todosLosTickets
@@ -163,6 +167,7 @@ function filtrarTickets() {
       ticket.solicitante?.toLowerCase().includes(termino) ||
       ticket.area?.toLowerCase().includes(termino) ||
       ticket.tipo_atencion?.toLowerCase().includes(termino) ||
+      ticket.direccion?.toLowerCase().includes(termino) ||
       ticket.ejecutor?.toLowerCase().includes(termino)
     );
     paginaActualActivos = 1;
@@ -177,6 +182,7 @@ function filtrarTickets() {
       ticket.solicitante?.toLowerCase().includes(termino) ||
       ticket.area?.toLowerCase().includes(termino) ||
       ticket.tipo_atencion?.toLowerCase().includes(termino) ||
+      ticket.direccion?.toLowerCase().includes(termino) ||
       ticket.ejecutor?.toLowerCase().includes(termino)
     );
     paginaActualListos = 1;
@@ -286,7 +292,7 @@ function crearFilaTicket(ticket) {
     </td>
     <td class="text-center">
       <div class="d-inline-flex gap-2">
-        <button class="btn btn-sm btn-outline-primary" onclick="editarEstado()">
+        <button class="btn btn-sm btn-outline-primary" onclick="editarTicket(${ticket.id})">
           <i class="bi bi-pencil"></i>
         </button>
         <button class="btn btn-sm btn-outline-danger" onclick="eliminarTicket(${ticket.id})">
@@ -304,6 +310,7 @@ function mostrarDetallesTicket(ticket) {
   document.getElementById("modalSolicitante").textContent = ticket.solicitante || "-";
   document.getElementById("modalArea").textContent = ticket.area || "-";
   document.getElementById("modalTipoAtencion").textContent = ticket.tipo_atencion || "-";
+  document.getElementById("modalDireccion").textContent = ticket.direccion_ubicacion || "-";
   document.getElementById("modalEjecutor").textContent = ticket.ejecutor || "-";
   document.getElementById("modalCorreoEjecutor").textContent = ticket.corre_ejecutor || "-";
   document.getElementById("modalFechaCreacion").textContent = new Date(ticket.fecha_creacion).toLocaleString();
@@ -340,6 +347,67 @@ function mostrarMensajeVacio(mensaje) {
     tabla.innerHTML = `<tr><td colspan="4" class="text-center text-muted">${mensaje}</td></tr>`;
   }
 }
+
+document.getElementById("formTicket").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const area = document.getElementById("area").value.trim();
+  const tipo_atencion = document.getElementById("tipo_atencion").value;
+  const direccion = document.getElementById("direccion").value;
+  const observaciones = document.getElementById("observaciones").value;
+
+  const token = localStorage.getItem("token");
+
+  try {
+    const payload = JSON.stringify({ area, tipo_atencion, direccion, observaciones });
+
+    if (editingTicket) {
+      const res = await fetch(`https://tickets.dev-wit.com/api/tickets/${editingTicket.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: payload,
+      });
+      showToast("Éxito", "Ticket editado correctamente");
+
+      if (!res.ok) throw new Error("Error al actualizar el ticket");
+    } else {
+      const res = await fetch("https://tickets.dev-wit.com/api/tickets", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: payload,
+      });
+      showToast("Éxito", "Dirección creada correctamente");
+
+      if (!res.ok) throw new Error("Error al crear la dirección");
+    }
+
+    await cargarTicketsDesdeAPI();
+    modal.hide();
+    e.target.reset();
+  } catch (error) {
+    console.error(error);
+    alert("Ocurrió un error al guardar la dirección: " + error.message);
+  }
+});
+
+function editarTicket(id) {
+  const ticket = tickets.find((a) => a.id === id);
+  if (!ticket) return;
+
+  editingTicket = ticket;
+  document.getElementById("area").value = ticket.area;
+  document.getElementById("tipo_atencion").value = ticket.tipo_atencion;
+  document.getElementById("direccion").value = ticket.direccion_ubicacion;
+  document.getElementById("observaciones").value = ticket.observaciones;
+  document.getElementById("modalTicketLabel").textContent = "Editar Ticket";
+  modal.show();  
+}
+
 
 function mostrarMensajeVacioCerrados(mensaje) {
   const mensajeVacio = document.getElementById("mensajeVacioCerrados");

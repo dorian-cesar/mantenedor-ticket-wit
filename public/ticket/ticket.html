@@ -149,7 +149,43 @@
     </div>
   </div>
 
-  <!-- Modal para eliminar área -->
+  <!-- Modal Editar -->
+  <div class="modal fade" id="modalTicket" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+          <form id="formTicket">
+              <div class="modal-header">
+              <h5 class="modal-title" id="modalTicketLabel">Crear Ticket</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+              <div class="mb-3">
+                      <label for="area" class="form-label">Área</label>
+                      <input type="text" id="area" class="form-control" required>                                        
+              </div> 
+              <div class="mb-3">                 
+                      <label for="tipo_atencion" class="form-label">Tipo de Atención</label>
+                      <input type="text" id="tipo_atencion" class="form-control" required>
+              </div>
+              <div class="mb-3">                 
+                      <label for="direccion" class="form-label">Dirección</label>
+                      <input type="text" id="direccion" class="form-control" required>
+              </div>   
+              <div class="mb-3">                 
+                      <label for="observaciones" class="form-label">Observaciones</label>
+                      <input type="text" id="observaciones" class="form-control" required>
+              </div>            
+              </div>            
+              <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Guardar</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+          </form>
+          </div>
+      </div>
+  </div>
+
+  <!-- Modal para eliminar ticket -->
   <div class="modal fade" id="modalEliminarTicket" tabindex="-1" aria-labelledby="modalEliminarTicketLabel" aria-hidden="true">
       <div class="modal-dialog">
           <div class="modal-content">
@@ -189,6 +225,7 @@
               <p><strong>Solicitante:</strong> <span id="modalSolicitante"></span></p>
               <p><strong>Área:</strong> <span id="modalArea"></span></p>
               <p><strong>Tipo de atención:</strong> <span id="modalTipoAtencion"></span></p>
+              <p><strong>Dirección:</strong> <span id="modalDireccion"></span></p>
             </div>
             <div class="col-md-6">
               <p><strong>Ejecutor:</strong> <span id="modalEjecutor"></span></p>

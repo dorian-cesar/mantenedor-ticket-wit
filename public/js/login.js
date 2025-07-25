@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const rol = resultado.user?.rol?.toLowerCase();
 
-      if (rol !== "admin" && rol !== "jefatura" && rol !== "superuser") {
+      if (rol !== "admin" && rol !== "superuser") {
         throw new Error("Acceso denegado. Tu cuenta no cumple con los requisitos para acceder a esta sección.");
       }
 

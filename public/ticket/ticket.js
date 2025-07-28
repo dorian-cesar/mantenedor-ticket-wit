@@ -360,41 +360,45 @@ function mostrarMensajeVacio(mensaje) {
 document.getElementById("formTicket").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const area = document.getElementById("area").value.trim();
-  const tipo_atencion = document.getElementById("tipo_atencion").value;
-  const direccion = document.getElementById("direccion").value;
+  const areaNombre = document.getElementById("area").value;
+  const tipoNombre = document.getElementById("tipo_atencion").value;
+  const direccionUbicacion = document.getElementById("direccion").value;
   const observaciones = document.getElementById("observaciones").value;
   const token = localStorage.getItem("token");
 
+  // Mapear IDs
+  const area = areas.find(a => a.nombre === areaNombre);
+  const tipo = tipos.find(t => t.nombre === tipoNombre);
+  const direccion = direcciones.find(d => d.ubicacion === direccionUbicacion);
+  const direcciones_id = direccion?.id || null;
+  const area_id = area?.id || null;
+  const tipo_atencion_id = tipo?.id || null;
+
+  const solicitante_id = usuario?.id || null;
+
   try {
+    const payload = JSON.stringify({
+      solicitante_id,
+      area_id,
+      tipo_atencion_id,
+      direcciones_id,
+      observaciones
+    });
+
+
     if (editingTicket) {
-      // Comparar campos modificados
-      const camposModificados = {};
-      if (area !== editingTicket.area) camposModificados.area = area;
-      if (tipo_atencion !== editingTicket.tipo_atencion) camposModificados.tipo_atencion = tipo_atencion;
-      if (direccion !== editingTicket.direccion_ubicacion) camposModificados.direccion = direccion;
-      if (observaciones !== editingTicket.observaciones) camposModificados.observaciones = observaciones;
-
-      if (Object.keys(camposModificados).length === 0) {
-        showToast("Información", "No se realizaron cambios.");
-        return;
-      }
-
       const res = await fetch(`https://tickets.dev-wit.com/api/tickets/editar/${editingTicket.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(camposModificados),
+        body: payload,
       });
 
       if (!res.ok) throw new Error("Error al actualizar el ticket");
-
       showToast("Éxito", "Ticket editado correctamente");
     } else {
-      const payload = JSON.stringify({ area, tipo_atencion, direccion, observaciones });
-
       const res = await fetch("https://tickets.dev-wit.com/api/tickets", {
         method: "POST",
         headers: {
@@ -404,12 +408,11 @@ document.getElementById("formTicket").addEventListener("submit", async (e) => {
         body: payload,
       });
 
-      if (!res.ok) throw new Error("Error al crear la dirección");
-
-      showToast("Éxito", "Dirección creada correctamente");
+      if (!res.ok) throw new Error("Error al crear el ticket");
+      showToast("Éxito", "Ticket creado correctamente");
     }
 
-    await cargarTicketsDesdeAPI();    
+    await cargarTicketsDesdeAPI();
     modal.hide();
     e.target.reset();
     editingTicket = null;
@@ -426,7 +429,7 @@ function editarTicket(id) {
   editingTicket = ticket;
   document.getElementById("area").value = ticket.area;
   document.getElementById("tipo_atencion").value = ticket.tipo_atencion;
-  document.getElementById("direccion").value = ticket.direccion;
+  document.getElementById("direccion").value = ticket.direccion_ubicacion || "";
   document.getElementById("observaciones").value = ticket.observaciones;
   document.getElementById("modalTicketLabel").textContent = "Editar Ticket";
   modal.show();  

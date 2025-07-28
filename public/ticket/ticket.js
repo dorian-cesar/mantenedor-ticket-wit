@@ -6,6 +6,9 @@ let todosLosTickets = [];
 let tipos = [];
 let usuarios = [];
 let estados = [];
+let areas = [];
+let direcciones = [];
+
 
 let ticketsActivos = [];
 let ticketsListos = [];
@@ -50,12 +53,13 @@ async function cargarTicketsDesdeAPI() {
 
     const headers = { Authorization: `Bearer ${token}` };
 
-    const [ticketsRes, tiposRes, usuariosRes, estadosRes, direccionesRes] = await Promise.all([
+    const [ticketsRes, tiposRes, usuariosRes, estadosRes, direccionesRes, areasRes] = await Promise.all([
       fetch("https://tickets.dev-wit.com/api/tickets", { headers }),
       fetch("https://tickets.dev-wit.com/api/tipos", { headers }),
       fetch("https://tickets.dev-wit.com/api/users", { headers }),
       fetch("https://tickets.dev-wit.com/api/estados", { headers }),
-      fetch("https://tickets.dev-wit.com/api/direcciones", { headers })
+      fetch("https://tickets.dev-wit.com/api/direcciones", { headers }),
+      fetch("https://tickets.dev-wit.com/api/areas", { headers }) 
     ]);
 
     // Verificar errores 401 en cualquiera de las respuestas
@@ -67,12 +71,13 @@ async function cargarTicketsDesdeAPI() {
       throw new Error("Error al obtener datos del servidor");
     }
 
-    const [datosTickets, tiposData, usuariosData, estadosData, direccionesData] = await Promise.all([
+    const [datosTickets, tiposData, usuariosData, estadosData, direccionesData, areasData] = await Promise.all([
       ticketsRes.json(),
       tiposRes.json(),
       usuariosRes.json(),
       estadosRes.json(),
-      direccionesRes.json()
+      direccionesRes.json(),
+      areasRes.json()
     ]);
 
     // Verificar mensajes de token inválido en las respuestas
@@ -84,6 +89,8 @@ async function cargarTicketsDesdeAPI() {
     usuarios = usuariosData;
     estados = estadosData;
     direcciones = direccionesData;
+    areas = areasData;
+
 
     todosLosTickets = datosTickets.map(ticket => enriquecerTicket(ticket));
     tickets = todosLosTickets
@@ -97,6 +104,7 @@ async function cargarTicketsDesdeAPI() {
     ticketsFiltradosListos = [...ticketsListos];
 
     filtrarTickets();
+    poblarSelects();
 
   } catch (error) {
     if (error.message === "TOKEN_INVALIDO") {
@@ -128,7 +136,8 @@ function enriquecerTicket(ticket) {
     ...ticket,
     ejecutor: ejecutorNombre,
     corre_ejecutor: correoEjecutor,
-    estado: estadoObj?.nombre || "-"
+    estado: estadoObj?.nombre || "-",
+    direccion: ticket.direccion || ticket.direccion_ubicacion || ""
   };
 }
 
@@ -350,29 +359,42 @@ function mostrarMensajeVacio(mensaje) {
 
 document.getElementById("formTicket").addEventListener("submit", async (e) => {
   e.preventDefault();
+
   const area = document.getElementById("area").value.trim();
   const tipo_atencion = document.getElementById("tipo_atencion").value;
   const direccion = document.getElementById("direccion").value;
   const observaciones = document.getElementById("observaciones").value;
-
   const token = localStorage.getItem("token");
 
   try {
-    const payload = JSON.stringify({ area, tipo_atencion, direccion, observaciones });
-
     if (editingTicket) {
-      const res = await fetch(`https://tickets.dev-wit.com/api/tickets/${editingTicket.id}`, {
+      // Comparar campos modificados
+      const camposModificados = {};
+      if (area !== editingTicket.area) camposModificados.area = area;
+      if (tipo_atencion !== editingTicket.tipo_atencion) camposModificados.tipo_atencion = tipo_atencion;
+      if (direccion !== editingTicket.direccion_ubicacion) camposModificados.direccion = direccion;
+      if (observaciones !== editingTicket.observaciones) camposModificados.observaciones = observaciones;
+
+      if (Object.keys(camposModificados).length === 0) {
+        showToast("Información", "No se realizaron cambios.");
+        return;
+      }
+
+      const res = await fetch(`https://tickets.dev-wit.com/api/tickets/editar/${editingTicket.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: payload,
+        body: JSON.stringify(camposModificados),
       });
-      showToast("Éxito", "Ticket editado correctamente");
 
       if (!res.ok) throw new Error("Error al actualizar el ticket");
+
+      showToast("Éxito", "Ticket editado correctamente");
     } else {
+      const payload = JSON.stringify({ area, tipo_atencion, direccion, observaciones });
+
       const res = await fetch("https://tickets.dev-wit.com/api/tickets", {
         method: "POST",
         headers: {
@@ -381,17 +403,19 @@ document.getElementById("formTicket").addEventListener("submit", async (e) => {
         },
         body: payload,
       });
-      showToast("Éxito", "Dirección creada correctamente");
 
       if (!res.ok) throw new Error("Error al crear la dirección");
+
+      showToast("Éxito", "Dirección creada correctamente");
     }
 
-    await cargarTicketsDesdeAPI();
+    await cargarTicketsDesdeAPI();    
     modal.hide();
     e.target.reset();
+    editingTicket = null;
   } catch (error) {
     console.error(error);
-    alert("Ocurrió un error al guardar la dirección: " + error.message);
+    showToast("Error", error.message, true);
   }
 });
 
@@ -402,7 +426,7 @@ function editarTicket(id) {
   editingTicket = ticket;
   document.getElementById("area").value = ticket.area;
   document.getElementById("tipo_atencion").value = ticket.tipo_atencion;
-  document.getElementById("direccion").value = ticket.direccion_ubicacion;
+  document.getElementById("direccion").value = ticket.direccion;
   document.getElementById("observaciones").value = ticket.observaciones;
   document.getElementById("modalTicketLabel").textContent = "Editar Ticket";
   modal.show();  
@@ -507,5 +531,40 @@ if (btnActualizar) {
       icono.className = "bi bi-arrow-clockwise me-1";
       btn.innerHTML = `<i class="bi bi-arrow-clockwise me-1"></i>Actualizar`;
     }, 800);
+  });
+}
+
+function poblarSelects() {
+  const areaSelect = document.getElementById("area");
+  const tipoAtencionSelect = document.getElementById("tipo_atencion");
+  const direccionSelect = document.getElementById("direccion");
+
+  // Limpiar selects
+  areaSelect.innerHTML = '<option value="">Seleccione un área</option>';
+  tipoAtencionSelect.innerHTML = '<option value="">Seleccione tipo de atención</option>';
+  direccionSelect.innerHTML = '<option value="">Seleccione una dirección</option>';
+
+  // Áreas
+  areas.forEach(area => {
+    const opt = document.createElement("option");
+    opt.value = area.nombre;
+    opt.textContent = area.nombre;
+    areaSelect.appendChild(opt);
+  });
+
+  // Tipos de atención
+  tipos.forEach(tipo => {
+    const opt = document.createElement("option");
+    opt.value = tipo.nombre;
+    opt.textContent = tipo.nombre;
+    tipoAtencionSelect.appendChild(opt);
+  });
+
+  // Direcciones
+  direcciones.forEach(dir => {
+    const opt = document.createElement("option");
+    opt.value = dir.ubicacion;           
+    opt.textContent = dir.ubicacion;
+    direccionSelect.appendChild(opt);
   });
 }
